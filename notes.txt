@@ -1,0 +1,53 @@
+body-parser: to process the request body
+bcrypt: for password encryption
+cors: for cross-origin request
+gridfs-stream: for file upload
+multer and multer-gridfs-storage: so we can upload our files locally 
+helemt: for request safety
+morgan: for logging
+jsonwebtoken: authentication
+
+
+https://www.npmjs.com/package/helmet
+Helmet helps you secure your Express apps by setting various HTTP headers. It's not a silver bullet, but it can help!
+
+Cross-origin resource sharing (CORS) is a mechanism that allows a client application to request restricted resources hosted on server from a different origin. 
+These resources may include; web fonts, videos, scripts, iframes, images and stylesheets.
+https://www.geeksforgeeks.org/use-of-cors-in-node-js/
+CORS is an HTTP-header based mechanism implemented by the browser which allows a server or an API to indicate any origins other than its origin from which the unknown origin gets permission to access and load resources. 
+The cors package available in the npm registry is used to tackle CORS errors in a Node.js application. 
+
+https://www.npmjs.com/package/morgan
+Morgan is HTTP request logger middleware for node.js
+
+https://www.npmjs.com/package/body-parser
+Parse incoming request bodies in a middleware before your handlers, available under the req.body property.
+
+
+https://www.npmjs.com/package/multer
+Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files.
+multer.diskStorage:
+The disk storage engine gives you full control on storing files to disk locally.
+There are two options available, destination and filename. They are both functions that determine where the file should be stored.
+destination is used to determine within which folder the uploaded files should be stored. This can also be given as a string (e.g. '/tmp/uploads').
+If no destination is given, the operating system's default directory for temporary files is used.
+filename is used to determine what the file should be named inside the folder.
+If no filename is given, each file will be given a random name that doesn't include any file extension.
+
+
+Authentication is when user registers or log in 
+whereas authorization is when u want to make sure that someone's logged in so u can perform certain actions. For eg, only
+users that are logged in can get their list of friends or posts
+
+
+https://www.npmjs.com/package/bcrypt
+A library to help you hash passwords. BCrypt Algorithm is used to hash and salt passwords securely.
+to guard against dangers or threats in the long run, like attackers having the computing power to guess passwords twice as quickly.
+const salt = await bcrypt.genSalt(); random salt provided by bcrypt and we use this salt to encrypt our password
+const passwordHash = await bcrypt.hash(req.body.password, salt); then this random salt is hashed with our password and it is encrypted and a random encrypted string is generated
+
+
+
+redux-persist: so that u can selectively store state into local storage
+
+use of redux-persist: we can save all state locally so if any time user close the tab or close the browser that info will still be there stored . so to get rid of they have to clear cache
