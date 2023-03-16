@@ -1,9 +1,5 @@
 import express from "express";
-import {
-  getUser,
-  getUserFriends,
-  addRemoveFriend,
-} from "../controllers/users.js";
+import { getUser, getUserFriends, addRemoveFriend } from "../controllers/users.js";
 import { authenticationMiddleware } from "../middleware/auth.js";
 
 const router = express.Router();

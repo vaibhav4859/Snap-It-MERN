@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 export const authenticationMiddleware = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
-        
+
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(StatusCodes.FORBIDDEN).json({ msg: "Access Denied" });
         }
