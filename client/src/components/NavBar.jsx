@@ -13,7 +13,6 @@ const NavBar = () => {
   const user = useSelector((state) => state.user);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   // const mode = useSelector((state) => state.mode);
-  // console.log(mode);
 
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
@@ -82,6 +81,7 @@ const NavBar = () => {
               <MenuItem value={fullName}>
                 <Typography>{fullName}</Typography>
               </MenuItem>
+              <MenuItem onClick={() => navigate(`/update/${user._id}`)}>Update Profile</MenuItem>
               <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
             </Select>
           </FormControl>

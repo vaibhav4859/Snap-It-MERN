@@ -40,6 +40,16 @@ export const login = async (req, res) => {
     }
 }
 
+export const update = async (req, res) => {
+    try {
+        const salt = await bcrypt.genSalt();
+        const passwordHash = await bcrypt.hash(req.body.password, salt);
+        
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+}
+
 
 
 // https://www.npmjs.com/package/bcrypt

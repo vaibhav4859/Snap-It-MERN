@@ -13,10 +13,11 @@ const ProfilePage = () => {
   const { userID } = useParams();
   // const params = useParams();
   const token = useSelector((state) => state.token);
+  // const user = useSelector((state) => state.user);
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
 
   const getUser = async () => {
-    const response = await fetch(`http://localhost:5000/users/${userID}`, {
+    const response = await fetch(`https://snap-it-backend.onrender.com/users/${userID}`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -26,7 +27,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     getUser();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!user) return null;
 

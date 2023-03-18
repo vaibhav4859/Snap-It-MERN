@@ -8,7 +8,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 import multer from "multer";
 import { fileURLToPath } from "url";
-import { register, login } from './controllers/auth.js';
+import { register, login, update } from './controllers/auth.js';
 import { createPost } from './controllers/posts.js';
 import { authenticationMiddleware } from "./middleware/auth.js";
 import userRoutes from './routes/userRoutes.js';
@@ -43,6 +43,7 @@ const upload = multer({ storage });
 app.post('/auth/register', upload.single('picture'), register); // upload is middleware here so without going to real logic, i.e, register our middleware runs, i.e, we upload that file
 app.post('/posts', authenticationMiddleware, upload.single('picture'), createPost);
 app.post('/auth/login', login);
+app.patch('/auth/update/:id', update);
 
 app.use('/users', userRoutes);
 app.use('/posts', postRoutes);
