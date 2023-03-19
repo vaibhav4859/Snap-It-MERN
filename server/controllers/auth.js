@@ -42,9 +42,19 @@ export const login = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
+        const { id } = req.params;
         const salt = await bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(req.body.password, salt);
-        
+
+        const updatedUser = await User.findOneAndUpdate({ _id: id }, req.body, {
+            new: true,
+            runValidators: true,
+        });
+
+        if (!updatedUser) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "User is not updated! " });
+
+        res.status(200).json({ updatedUser });
+
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
