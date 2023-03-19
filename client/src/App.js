@@ -14,10 +14,14 @@ import UpdateProfile from "components/UpdateProfile";
 // insert comments with scrollbar customized
 // chatting
 // twitter aur linkedin ka url
-// 5 feinds ke baad scrollbar aa jayega
+// 5 friends ke baad scrollbar aa jayega
+// jaha bhi use krna h user ko as a prop kro
+// naam leak kr rha h in navbar if long
+// profile photo update ni hori baaki sab hora h
 
 function App() {
   const mode = useSelector((state) => state.mode);
+  const user = useSelector((state) => state.user);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const isAuth = Boolean(useSelector((state) => state.token));
 
@@ -30,7 +34,7 @@ function App() {
             <Route path="/" element={<LoginPage />} />
             <Route path="/home" element={isAuth ? <HomePage /> : <Navigate to="/" />} />
             <Route path="/profile/:userID" element={isAuth ? <ProfilePage /> : <Navigate to="/" />} />
-            <Route path="/update/:id" element={isAuth ? <UpdateProfile /> : <Navigate to="/" />} />
+            <Route path="/update/:id" element={isAuth ? <UpdateProfile user={user} /> : <Navigate to="/" />} />
           </Routes>
         </ThemeProvider>
       </BrowserRouter>

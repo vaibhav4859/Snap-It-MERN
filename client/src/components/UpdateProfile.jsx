@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -15,43 +15,65 @@ import { useDispatch, useSelector } from "react-redux";
 import Dropzone from "react-dropzone";
 import FlexBetween from "./UI/FlexBetween";
 import NavBar from "./NavBar";
+import { setLogin } from "store";
 
 const validationSchema = yup.object().shape({
-  firstName: yup.string(),
-  lastName: yup.string(),
-  email: yup.string().email("invalid email"),
-  password: yup.string(),
-  location: yup.string(),
-  occupation: yup.string(),
-  picture: yup.string(),
+  firstName: yup.string().required("required").min(2).max(50),
+  lastName: yup.string().required("required").min(2).max(50),
+  email: yup.string().email("invalid email").required("required").max(50),
+  password: yup.string().required("required").min(5),
+  location: yup.string().required("required"),
+  occupation: yup.string().required("required"),
+  picture: yup.string().required("required"),
 });
 
-let initialValues = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  password: "",
-  location: "",
-  occupation: "",
-  picture: "",
-};
-
-const UpdateProfile = () => {
-  const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
-  const { _id, picturePath } = useSelector((state) => state.user);
-  const { palette } = useTheme();
-  // const { userID } = useParams();
-  // const userID = "640f539a6f0d5aac5faa7e9c";
-  // const params = useParams();
+const UpdateProfile = (props) => {
+  const [clicked, setCliked] = useState(false);
   const token = useSelector((state) => state.token);
-  const user = useSelector((state) => state.user);
+  const { id } = useParams();
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isNonMobile = useMediaQuery("(min-width:600px)");
+  const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
+
+  const initialValues = {
+    firstName: props.user.firstName,
+    lastName: props.user.lastName,
+    email: props.user.email,
+    password: props.user.password,
+    location: props.user.location,
+    occupation: props.user.occupation,
+    picture: props.user.picturePath,
+  };
 
   const handleFormSubmit = async (values, onSubmitProps) => {
+    console.log("hi", values);
+    setCliked(true);
+    // const formData = new FormData();
+    // for (let value in values) {
+    //   formData.append(value, values[value]);
+    // }
+    // console.log(formData);
+    // formData.append("picturePath", values.picture.name);
+    values.picturePath = values.picture.name;
+    console.log(values.picture, values.picturePath);
+    const savedUserResponse = await fetch(
+      `http://localhost:5000/auth/update/${id}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      }
+    );
+    const savedUser = await savedUserResponse.json();
+    console.log(savedUser.upsatedUser);
     onSubmitProps.resetForm();
+    if (savedUser) {
+      dispatch(setLogin({ user: savedUser.updatedUser, token }));
+    }
+    setCliked(false);
+    navigate('/home');
   };
 
   return (
@@ -65,7 +87,7 @@ const UpdateProfile = () => {
         backgroundColor={theme.palette.background.alt}
       >
         <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }}>
-          Welcome to Snap-It, Update your Snap-It profile!
+          Welcome to Snap-It, update your profile!
         </Typography>
         <Formik
           onSubmit={handleFormSubmit}
@@ -73,13 +95,13 @@ const UpdateProfile = () => {
           validationSchema={validationSchema}
         >
           {({
+            values,
             errors,
             touched,
             handleBlur,
             handleChange,
             handleSubmit,
             setFieldValue,
-            resetForm,
           }) => (
             <form onSubmit={handleSubmit}>
               <Box
@@ -95,7 +117,7 @@ const UpdateProfile = () => {
                     label="First Name"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={user.firstName}
+                    value={values.firstName}
                     name="firstName"
                     error={
                       Boolean(touched.firstName) && Boolean(errors.firstName)
@@ -107,7 +129,7 @@ const UpdateProfile = () => {
                     label="Last Name"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={user.lastName}
+                    value={values.lastName}
                     name="lastName"
                     error={
                       Boolean(touched.lastName) && Boolean(errors.lastName)
@@ -119,7 +141,7 @@ const UpdateProfile = () => {
                     label="Location"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={user.location}
+                    value={values.location}
                     name="location"
                     error={
                       Boolean(touched.location) && Boolean(errors.location)
@@ -131,7 +153,7 @@ const UpdateProfile = () => {
                     label="Occupation"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={user.occupation}
+                    value={values.occupation}
                     name="occupation"
                     error={
                       Boolean(touched.occupation) && Boolean(errors.occupation)
@@ -141,7 +163,7 @@ const UpdateProfile = () => {
                   />
                   <Box
                     gridColumn="span 4"
-                    border={`1px solid ${palette.neutral.medium}`}
+                    border={`1px solid ${theme.palette.neutral.medium}`}
                     borderRadius="5px"
                     p="1rem"
                   >
@@ -155,15 +177,13 @@ const UpdateProfile = () => {
                       {({ getRootProps, getInputProps }) => (
                         <Box
                           {...getRootProps()}
-                          border={`2px dashed ${palette.primary.main}`}
+                          border={`2px dashed ${theme.palette.primary.main}`}
                           p="1rem"
                           sx={{ "&:hover": { cursor: "pointer" } }}
                         >
                           <input {...getInputProps()} />
                           <FlexBetween>
-                            <Typography>
-                              {user.picturePath}
-                            </Typography>
+                            <Typography>{values.picture}</Typography>
                             <EditOutlinedIcon />
                           </FlexBetween>
                         </Box>
@@ -176,7 +196,7 @@ const UpdateProfile = () => {
                   label="Email"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={user.email}
+                  value={values.email}
                   name="email"
                   error={Boolean(touched.email) && Boolean(errors.email)}
                   helperText={touched.email && errors.email}
@@ -187,7 +207,7 @@ const UpdateProfile = () => {
                   type="password"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={user.password}
+                  value={values.password}
                   name="password"
                   error={Boolean(touched.password) && Boolean(errors.password)}
                   helperText={touched.password && errors.password}
@@ -195,6 +215,7 @@ const UpdateProfile = () => {
                 />
               </Box>
 
+              {/* BUTTONS */}
               <Box>
                 <Button
                   fullWidth
@@ -202,12 +223,23 @@ const UpdateProfile = () => {
                   sx={{
                     m: "2rem 0",
                     p: "1rem",
-                    backgroundColor: palette.primary.main,
-                    color: palette.background.alt,
-                    "&:hover": { color: palette.primary.main },
+                    backgroundColor: !clicked
+                      ? theme.palette.primary.main
+                      : "#808080",
+                    color: !clicked ? theme.palette.background.alt : "#101010",
+                    "&:hover": {
+                      color: !clicked ? theme.palette.primary.main : null,
+                      backgroundColor: !clicked ? null : "#808080",
+                    },
+                    "&:disabled": {
+                      color: !clicked
+                        ? theme.palette.background.alt
+                        : "#101010",
+                    },
                   }}
+                  disabled={clicked || Object.keys(errors).length !== 0}
                 >
-                  Update
+                  {!clicked ? "UPDATE" : "WAIT..."}
                 </Button>
               </Box>
             </form>

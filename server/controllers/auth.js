@@ -42,11 +42,15 @@ export const login = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
+        console.log(req.body);
         const { id } = req.params;
         const salt = await bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(req.body.password, salt);
 
-        const updatedUser = await User.findOneAndUpdate({ _id: id }, req.body, {
+        const updatedUser = await User.findOneAndUpdate({ _id: id }, {
+            ...req.body,
+            password: passwordHash
+        }, {
             new: true,
             runValidators: true,
         });

@@ -41,9 +41,9 @@ const upload = multer({ storage });
 
 // Routes
 app.post('/auth/register', upload.single('picture'), register); // upload is middleware here so without going to real logic, i.e, register our middleware runs, i.e, we upload that file
+app.patch('/auth/update/:id', upload.single('picture'), update);
 app.post('/posts', authenticationMiddleware, upload.single('picture'), createPost);
 app.post('/auth/login', login);
-app.patch('/auth/update/:id', update);
 
 app.use('/users', userRoutes);
 app.use('/posts', postRoutes);

@@ -134,6 +134,7 @@ const NavBar = () => {
                 <MenuItem value={fullName}>
                   <Typography>{fullName}</Typography>
                 </MenuItem>
+                <MenuItem onClick={() => navigate(`/update/${user._id}`)}>Update Profile</MenuItem>
                 <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
               </Select>
             </FormControl>
