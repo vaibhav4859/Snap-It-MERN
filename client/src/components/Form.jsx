@@ -21,8 +21,8 @@ import Dropzone from "react-dropzone";
 import FlexBetween from "./UI/FlexBetween";
 
 const registerSchema = yup.object().shape({
-  firstName: yup.string().required("required").min(2).max(50),
-  lastName: yup.string().required("required").min(2).max(50),
+  firstName: yup.string().required("required").min(2).max(12),
+  lastName: yup.string().required("required").min(2).max(12),
   email: yup.string().email("invalid email").required("required").max(50),
   password: yup.string().required("required").min(5),
   location: yup.string().required("required"),
@@ -74,6 +74,7 @@ const Form = () => {
       formData.append(value, values[value]);
     }
     formData.append("picturePath", values.picture.name);
+    console.log(values.picture, values.picture.name, formData.picturePath);
     const savedUserResponse = await fetch(
       "https://snap-it-backend.onrender.com/auth/register",
       {
@@ -83,7 +84,7 @@ const Form = () => {
     );
 
     const savedUser = await savedUserResponse.json();
-    // console.log(savedUser);
+    console.log(savedUser);
     onSubmitProps.resetForm();
     setCliked(false);
     if (savedUser.error) {
@@ -96,6 +97,7 @@ const Form = () => {
   };
 
   const login = async (values, onSubmitProps) => {
+    onSubmitProps.resetForm();
     const loggedInResponse = await fetch(
       "https://snap-it-backend.onrender.com/auth/login",
       {
@@ -105,8 +107,6 @@ const Form = () => {
       }
     );
     const loggedIn = await loggedInResponse.json();
-    // console.log(loggedIn);
-    onSubmitProps.resetForm();
     setCliked(false);
     if (loggedIn.msg) {
       setError("Invalid Credentials!");
@@ -204,8 +204,10 @@ const Form = () => {
                   <Dropzone
                     acceptedFiles=".jpg,.jpeg,.png"
                     multiple={false}
-                    onDrop={(acceptedFiles) =>
+                    onDrop={(acceptedFiles) =>{
                       setFieldValue("picture", acceptedFiles[0])
+                      // console.log(acceptedFiles);
+                    }
                     }
                   >
                     {({ getRootProps, getInputProps }) => (

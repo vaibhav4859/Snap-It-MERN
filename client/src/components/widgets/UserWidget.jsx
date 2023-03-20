@@ -8,38 +8,18 @@ import { Box, Typography, Divider, useTheme } from "@mui/material";
 import UserImage from "../UI/UserImage";
 import FlexBetween from "../UI/FlexBetween";
 import WidgetWrapper from "../UI/WidgetWrapper";
-import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LinkedInImg from '../../assets/linkedin.png';
 import TwitterImg from '../../assets/twitter.png';
 
-const UserWidget = ({ userId, picturePath }) => {
-  const [user, setUser] = useState(null);
+const UserWidget = (props) => {
   const { palette } = useTheme();
   const navigate = useNavigate();
-  const token = useSelector((state) => state.token);
-  // const user = useSelector((state) => state.user);
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
-  // console.log(user);
 
-  const getUser = async () => {
-    const response = await fetch(`https://snap-it-backend.onrender.com/users/${userId}`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
-    setUser(data);
-  };
-
-  useEffect(() => {
-    getUser();
-  }, []);
-  if (!user) {
-    return null;
-  }
+  if (!props.user) return null;
 
   const {
     firstName,
@@ -49,7 +29,7 @@ const UserWidget = ({ userId, picturePath }) => {
     viewedProfile,
     impressions,
     friends,
-  } = user;
+  } = props.user;
 
   return (
     <WidgetWrapper>
@@ -57,10 +37,10 @@ const UserWidget = ({ userId, picturePath }) => {
       <FlexBetween
         gap="0.5rem"
         pb="1.1rem"
-        onClick={() => navigate(`/profile/${userId}`)}
+        onClick={() => navigate(`/profile/${props.user._id}`)}
       >
         <FlexBetween gap="1rem">
-          <UserImage image={picturePath} />
+          <UserImage image={props.user.picturePath} />
           <Box>
             <Typography
               variant="h4"
@@ -78,7 +58,7 @@ const UserWidget = ({ userId, picturePath }) => {
             <Typography color={medium}>{friends.length} friends</Typography>
           </Box>
         </FlexBetween>
-        <ManageAccountsOutlined  onClick={() => navigate('/')}/>
+        <ManageAccountsOutlined />
       </FlexBetween>
 
       <Divider />

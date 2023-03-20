@@ -6,8 +6,12 @@ import {
   useMediaQuery,
   Typography,
   useTheme,
+  Collapse,
+  Alert,
+  IconButton,
 } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
@@ -18,8 +22,8 @@ import NavBar from "./NavBar";
 import { setLogin } from "store";
 
 const validationSchema = yup.object().shape({
-  firstName: yup.string().required("required").min(2).max(50),
-  lastName: yup.string().required("required").min(2).max(50),
+  firstName: yup.string().required("required").min(2).max(12),
+  lastName: yup.string().required("required").min(2).max(12),
   email: yup.string().email("invalid email").required("required").max(50),
   password: yup.string().required("required").min(5),
   location: yup.string().required("required"),
@@ -29,6 +33,7 @@ const validationSchema = yup.object().shape({
 
 const UpdateProfile = (props) => {
   const [clicked, setCliked] = useState(false);
+  const [error, setError] = useState(false);
   const token = useSelector((state) => state.token);
   const { id } = useParams();
   const theme = useTheme();
@@ -41,40 +46,57 @@ const UpdateProfile = (props) => {
     firstName: props.user.firstName,
     lastName: props.user.lastName,
     email: props.user.email,
-    password: props.user.password,
+    password: "",
     location: props.user.location,
     occupation: props.user.occupation,
     picture: props.user.picturePath,
   };
 
   const handleFormSubmit = async (values, onSubmitProps) => {
-    console.log("hi", values);
     setCliked(true);
-    // const formData = new FormData();
-    // for (let value in values) {
-    //   formData.append(value, values[value]);
-    // }
-    // console.log(formData);
-    // formData.append("picturePath", values.picture.name);
-    values.picturePath = values.picture.name;
-    console.log(values.picture, values.picturePath);
+    // values.picturePath = values.picture.name;
+    // console.log(values.picture, values.picture.name);
+    // delete values.picture;
+    const formData = new FormData();
+    for (let value in values) {
+      formData.append(value, values[value]);
+    }
+    if (values.picture.name) {
+      formData.append("picturePath", values.picture.name);
+    }
+    // formData["picture"] = values.picture;
+    for (var key of formData.entries()) {
+      console.log(key[0] + ", " + key[1]);
+    }
+    onSubmitProps.resetForm();
     const savedUserResponse = await fetch(
-      `http://localhost:5000/auth/update/${id}`,
+      `https://snap-it-backend.onrender.com/auth/update/${id}`,
       {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        // headers: { "Content-Type": "application/json" },
+        body: formData,
       }
     );
     const savedUser = await savedUserResponse.json();
-    console.log(savedUser.upsatedUser);
-    onSubmitProps.resetForm();
+    console.log(savedUser);
+    if (savedUser.msg === "Incorrect Password") {
+      values.password = "";
+      setError(true);
+      setCliked(false);
+      return;
+    }
     if (savedUser) {
       dispatch(setLogin({ user: savedUser.updatedUser, token }));
     }
     setCliked(false);
-    navigate('/home');
+    navigate("/home");
   };
+
+  if (error) {
+    setTimeout(() => {
+      setError(false);
+    }, 5000);
+  }
 
   return (
     <Box>
@@ -170,9 +192,10 @@ const UpdateProfile = (props) => {
                     <Dropzone
                       acceptedFiles=".jpg,.jpeg,.png"
                       multiple={false}
-                      onDrop={(acceptedFiles) =>
-                        setFieldValue("picture", acceptedFiles[0])
-                      }
+                      onDrop={(acceptedFiles) => {
+                        setFieldValue("picture", acceptedFiles[0]);
+                        console.log(acceptedFiles, values.pic);
+                      }}
                     >
                       {({ getRootProps, getInputProps }) => (
                         <Box
@@ -181,9 +204,17 @@ const UpdateProfile = (props) => {
                           p="1rem"
                           sx={{ "&:hover": { cursor: "pointer" } }}
                         >
-                          <input {...getInputProps()} />
+                          <input
+                            type="file"
+                            {...getInputProps()}
+                            name="picture"
+                          />
                           <FlexBetween>
-                            <Typography>{values.picture}</Typography>
+                            <Typography>
+                              {values.picture.name
+                                ? values.picture.name
+                                : values.picture}
+                            </Typography>
                             <EditOutlinedIcon />
                           </FlexBetween>
                         </Box>
@@ -203,7 +234,7 @@ const UpdateProfile = (props) => {
                   sx={{ gridColumn: "span 4" }}
                 />
                 <TextField
-                  label="Password"
+                  label="Confirm Password"
                   type="password"
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -214,6 +245,32 @@ const UpdateProfile = (props) => {
                   sx={{ gridColumn: "span 4" }}
                 />
               </Box>
+
+              {/* ALERT */}
+              {error && (
+                <Box sx={{ width: "100%", pt: "2%" }}>
+                  <Collapse in={error}>
+                    <Alert
+                      severity="error"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
+                          onClick={() => {
+                            setError(false);
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                      sx={{ fontSize: "0.95rem" }}
+                    >
+                      Incorrect Password
+                    </Alert>
+                  </Collapse>
+                </Box>
+              )}
 
               {/* BUTTONS */}
               <Box>
@@ -237,7 +294,11 @@ const UpdateProfile = (props) => {
                         : "#101010",
                     },
                   }}
-                  disabled={clicked || Object.keys(errors).length !== 0}
+                  disabled={
+                    clicked ||
+                    Object.keys(errors).length !== 0 ||
+                    !values.password
+                  }
                 >
                   {!clicked ? "UPDATE" : "WAIT..."}
                 </Button>

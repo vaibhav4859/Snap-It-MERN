@@ -1,6 +1,25 @@
 import { useState } from "react";
-import { Box, IconButton, InputBase, Typography, Select, MenuItem, FormControl, useTheme, useMediaQuery } from "@mui/material";
-import { Search, Message, DarkMode, LightMode, Notifications, Help, Menu, Close } from "@mui/icons-material";
+import {
+  Box,
+  IconButton,
+  InputBase,
+  Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
+import {
+  Search,
+  Message,
+  DarkMode,
+  LightMode,
+  Notifications,
+  Help,
+  Menu,
+  Close,
+} from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "../store/index";
 import { useNavigate } from "react-router-dom";
@@ -35,11 +54,17 @@ const NavBar = () => {
               color: primaryLight,
               cursor: "pointer",
             },
-          }}>
+          }}
+        >
           Snap-It
         </Typography>
         {isNonMobileScreens && (
-          <FlexBetween backgroundColor={neutralLight} borderRadius="9px" gap="3rem" padding="0.1rem 1.5rem">
+          <FlexBetween
+            backgroundColor={neutralLight}
+            borderRadius="9px"
+            gap="3rem"
+            padding="0.1rem 1.5rem"
+          >
             <InputBase placeholder="Search..." />
             <IconButton>
               <Search />
@@ -77,34 +102,66 @@ const NavBar = () => {
                   backgroundColor: neutralLight,
                 },
               }}
-              input={<InputBase />}>
-              <MenuItem value={fullName}>
-                <Typography>{fullName}</Typography>
+              input={<InputBase />}
+            >
+              <MenuItem
+                value={fullName}
+                onClick={() => navigate(`/profile/${user._id}`)}
+              >
+                <Typography>
+                  {fullName.length <= 13
+                    ? fullName
+                    : `${fullName.slice(0, 13)}...`}
+                </Typography>
               </MenuItem>
-              <MenuItem onClick={() => navigate(`/update/${user._id}`)}>Update Profile</MenuItem>
+              <MenuItem onClick={() => navigate(`/update/${user._id}`)}>
+                Update Profile
+              </MenuItem>
               <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
             </Select>
           </FormControl>
         </FlexBetween>
       ) : (
-        <IconButton onClick={() => setIsMobileMenuToggled(!isMobileMenuToggled)}>
+        <IconButton
+          onClick={() => setIsMobileMenuToggled(!isMobileMenuToggled)}
+        >
           <Menu />
         </IconButton>
       )}
 
       {/* MOBILE NAV */}
       {!isNonMobileScreens && isMobileMenuToggled && (
-        <Box position="fixed" right="0" bottom="0" height="100%" zIndex="10" maxWidth="500px" minWidth="300px" backgroundColor={background}>
+        <Box
+          position="fixed"
+          right="0"
+          bottom="0"
+          height="100%"
+          zIndex="10"
+          maxWidth="500px"
+          minWidth="300px"
+          backgroundColor={background}
+        >
           {/* CLOSE ICON */}
           <Box display="flex" justifyContent="flex-end" p="1rem">
-            <IconButton onClick={() => setIsMobileMenuToggled(!isMobileMenuToggled)}>
+            <IconButton
+              onClick={() => setIsMobileMenuToggled(!isMobileMenuToggled)}
+            >
               <Close />
             </IconButton>
           </Box>
 
           {/* MENU ITEMS */}
-          <FlexBetween display="flex" flexDirection="column" justifyContent="center" alignItems="center" gap="3rem">
-            <IconButton onClick={() => dispatch(setMode())} sx={{ fontSize: "25px" }}>
+          <FlexBetween
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            gap="3rem"
+          >
+            <IconButton
+              onClick={() => dispatch(setMode())}
+              sx={{ fontSize: "25px" }}
+            >
               {theme.palette.mode === "dark" ? (
                 <DarkMode sx={{ fontSize: "25px" }} />
               ) : (
@@ -130,12 +187,24 @@ const NavBar = () => {
                     backgroundColor: neutralLight,
                   },
                 }}
-                input={<InputBase />}>
-                <MenuItem value={fullName}>
-                  <Typography>{fullName}</Typography>
+                input={<InputBase />}
+              >
+                <MenuItem
+                  value={fullName}
+                  onClick={() => navigate(`/profile/${user._id}`)}
+                >
+                  <Typography>
+                    {fullName.length <= 13
+                      ? fullName
+                      : `${fullName.slice(0, 13)}...`}
+                  </Typography>
                 </MenuItem>
-                <MenuItem onClick={() => navigate(`/update/${user._id}`)}>Update Profile</MenuItem>
-                <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
+                <MenuItem onClick={() => navigate(`/update/${user._id}`)}>
+                  Update Profile
+                </MenuItem>
+                <MenuItem onClick={() => dispatch(setLogout())}>
+                  Log Out
+                </MenuItem>
               </Select>
             </FormControl>
           </FlexBetween>

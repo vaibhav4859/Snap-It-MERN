@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "../../store/index";
 import PostWidget from "./PostWidget";
 
-const PostsWidget = ({ userId, isProfile = false }) => {
+const PostsWidget = ({ userId, isProfile = false, name }) => {
   const dispatch = useDispatch();
   const posts = useSelector((state) => state.posts);
   const token = useSelector((state) => state.token);
@@ -39,7 +39,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
 
   return (
     <>
-      {posts.map(
+      {posts.length ? posts.map(
         ({
           _id,
           userId,
@@ -65,7 +65,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
             comments={comments}
           />
         )
-      )}
+      ) : <h1>{name} hasn't posted anything yet!</h1>}
     </>
   );
 };

@@ -28,7 +28,7 @@ const FriendListWidget = ({ userId }) => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <WidgetWrapper>
+    <WidgetWrapper maxHeight = "19rem" friend={true}>
       <Typography
         color={palette.neutral.dark}
         variant="h5"

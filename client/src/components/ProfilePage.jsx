@@ -8,7 +8,7 @@ import MyPostWidget from "./widgets/MyPostWidget";
 import PostsWidget from "./widgets/PostsWidget";
 import UserWidget from "./widgets/UserWidget";
 
-const ProfilePage = () => {
+const ProfilePage = (props) => {
   const [user, setUser] = useState(null);
   const { userID } = useParams();
   // const params = useParams();
@@ -17,10 +17,13 @@ const ProfilePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
 
   const getUser = async () => {
-    const response = await fetch(`https://snap-it-backend.onrender.com/users/${userID}`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await fetch(
+      `https://snap-it-backend.onrender.com/users/${userID}`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     const data = await response.json();
     setUser(data);
   };
@@ -42,7 +45,7 @@ const ProfilePage = () => {
         justifyContent="center"
       >
         <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
-          <UserWidget userId={userID} picturePath={user.picturePath} />
+          <UserWidget userId={userID} picturePath={user.picturePath} user={user} />
           <Box m="2rem 0" />
           <FriendListWidget userId={userID} />
         </Box>
@@ -50,9 +53,11 @@ const ProfilePage = () => {
           flexBasis={isNonMobileScreens ? "42%" : undefined}
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
-          <MyPostWidget picturePath={user.picturePath} />
+          {userID === props.id && (
+            <MyPostWidget picturePath={user.picturePath} />
+          )}
           <Box m="2rem 0" />
-          <PostsWidget userId={userID} isProfile />
+          <PostsWidget userId={userID} name={`${user.firstName} ${user.lastName}`} isProfile />
         </Box>
       </Box>
     </Box>
