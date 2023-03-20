@@ -2,8 +2,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/UserSchema.js";
 import { StatusCodes } from 'http-status-codes';
+import fs from 'fs';
 
 export const register = async (req, res) => {
+    console.log(req.body);
     try {
         const salt = await bcrypt.genSalt(); // random salt provided by bcrypt and we use this salt to encrypt our password
         const passwordHash = await bcrypt.hash(req.body.password, salt); // then this random salt is hashed with our password and it is encrypted and a random encrypted string is generated
@@ -27,10 +29,10 @@ export const login = async (req, res) => {
         const { email, password } = req.body;
 
         const user = await User.findOne({ email: email });
-        if (!user) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "User does not exist. " });
+        if (!user) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "User does not exist." });
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Invalid credentials. " });
+        if (!isMatch) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Invalid credentials." });
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
         delete user.password; // delete user password so it doesn't get sent back to frontend
@@ -43,6 +45,20 @@ export const login = async (req, res) => {
 export const update = async (req, res) => {
     try {
         console.log(req.body);
+
+        const { password, email, picturePath } = req.body;
+        const user = await User.findOne({ email: email });
+        if (!user) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "User does not exist." });
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Incorrect Password" });
+
+        if (user.picturePath !== picturePath) {
+            console.log("dp", user.picturePath, picturePath);
+            fs.unlink(`../server/public/assets/${user.picturePath}`, (err => console.log(err)))
+            console.log("changed");
+        }
+
         const { id } = req.params;
         const salt = await bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(req.body.password, salt);
@@ -54,6 +70,8 @@ export const update = async (req, res) => {
             new: true,
             runValidators: true,
         });
+
+        console.log(updatedUser);
 
         if (!updatedUser) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "User is not updated! " });
 
