@@ -78,7 +78,7 @@ export const commentOnPost = async (req, res) => {
         // console.log(id, req.body);
         const { name, image, comment, userId } = req.body;
 
-        const obj = {name : name, image : image, comment: comment, userId};
+        const obj = { name: name, image: image, comment: comment, userId };
 
         const post = await Post.findById(id);
         post.comments.push(obj);
@@ -96,8 +96,8 @@ export const commentOnPost = async (req, res) => {
 
 export const deleteComment = async (req, res) => {
     try {
-        const {id} = req.params;
-        const {index} = req.body;
+        const { id } = req.params;
+        const { index } = req.body;
 
         const post = await Post.findById(id);
         const comments = post.comments;
@@ -112,6 +112,20 @@ export const deleteComment = async (req, res) => {
         );
 
         res.status(StatusCodes.OK).json(updatedPost);
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+    }
+}
+
+export const deletePost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const post = await Post.findByIdAndDelete({ _id: postId });
+        if (!post) res.status(404).json({ msg: `No post with id : ${postId}` });
+
+        const updatedPosts = await Post.find();
+
+        res.status(StatusCodes.OK).json(updatedPosts);
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
