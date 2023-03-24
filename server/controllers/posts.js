@@ -71,3 +71,48 @@ export const likePost = async (req, res) => {
         res.status(StatusCodes.NOT_FOUND).json({ message: error.message });
     }
 }
+
+export const commentOnPost = async (req, res) => {
+    try {
+        const { id } = req.params;
+        // console.log(id, req.body);
+        const { name, image, comment, userId } = req.body;
+
+        const obj = {name : name, image : image, comment: comment, userId};
+
+        const post = await Post.findById(id);
+        post.comments.push(obj);
+
+        const updatedPost = await Post.findByIdAndUpdate(id,
+            { comments: post.comments },
+            { new: true, runValidators: true }
+        );
+
+        res.status(StatusCodes.OK).json(updatedPost);
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+    }
+}
+
+export const deleteComment = async (req, res) => {
+    try {
+        const {id} = req.params;
+        const {index} = req.body;
+
+        const post = await Post.findById(id);
+        const comments = post.comments;
+
+        console.log(index, comments);
+
+        const updatedComments = comments.filter((val, idx) => idx !== index);
+
+        const updatedPost = await Post.findByIdAndUpdate(id,
+            { comments: updatedComments },
+            { new: true, runValidators: true }
+        );
+
+        res.status(StatusCodes.OK).json(updatedPost);
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+    }
+}

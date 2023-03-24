@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "../../store/index";
 import PostWidget from "./PostWidget";
 
-const PostsWidget = ({ userId, isProfile = false, name }) => {
+const PostsWidget = ({ userId, user, isProfile = false, name }) => {
   const dispatch = useDispatch();
   const posts = useSelector((state) => state.posts);
   const token = useSelector((state) => state.token);
@@ -56,6 +56,7 @@ const PostsWidget = ({ userId, isProfile = false, name }) => {
             key={_id}
             postId={_id}
             postUserId={userId}
+            user={user}
             name={`${firstName} ${lastName}`}
             description={description}
             location={location}
@@ -70,4 +71,4 @@ const PostsWidget = ({ userId, isProfile = false, name }) => {
   );
 };
 
-export default PostsWidget;
+export default React.memo(PostsWidget);

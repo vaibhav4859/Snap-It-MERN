@@ -73,7 +73,7 @@ const UpdateProfile = (props) => {
       `https://snap-it-backend.onrender.com/auth/update/${id}`,
       {
         method: "PATCH",
-        // headers: { "Content-Type": "application/json" },
+        Authorization: `Bearer ${token}`,
         body: formData,
       }
     );

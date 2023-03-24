@@ -16,9 +16,9 @@ import UpdateProfile from "components/UpdateProfile";
 // picture naayi pr picture aur picturepath dono aa rha h but purani pr picture as a file ni jaari -done
 // profile photo update ni hori baaki sab hora h -done
 // insert comments with scrollbar customized
+// password update problem via otp
 // friend request accept tabhi ho jab accept kri via notification in navbar
 // twitter aur linkedin ka url
-// password update problem via otp
 // chatting
 
 function App() {
@@ -26,7 +26,7 @@ function App() {
   const user = useSelector((state) => state.user);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const isAuth = Boolean(useSelector((state) => state.token));
-  // console.log(user);
+  // console.log(user._id);
 
   return (
     <div className="app">
