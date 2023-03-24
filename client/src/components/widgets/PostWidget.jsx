@@ -82,7 +82,7 @@ const PostWidget = ({
   const submitHandler = async (e) => {
     e.preventDefault();
     const response = await fetch(
-      `http://localhost:5000/posts/${postId}/comment`,
+      `https://snap-it-backend.onrender.com/posts/${postId}/comment`,
       {
         method: "PATCH",
         headers: {
@@ -106,13 +106,14 @@ const PostWidget = ({
   const deleteComment = async (index) => {
     // console.log("hi", index);
     const response = await fetch(
-      `http://localhost:5000/posts/${postId}/comment`, {
+      `https://snap-it-backend.onrender.com/posts/${postId}/comment`,
+      {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({index}),
+        body: JSON.stringify({ index }),
       }
     );
     const updatedPost = await response.json();
@@ -165,49 +166,60 @@ const PostWidget = ({
         </IconButton>
       </FlexBetween>
       {isComments && (
-        <Box mt="0.5rem">
-          {comments.map((comment, index) => (
-            <Box key={`${name}-${index}`}>
-              <Divider />
-              <Typography
-                sx={{ color: main, m: "0.5rem 0", pl: "1rem", display: "flex" }}
-              >
-                <UserImage image={comment.image} size="40px" />
-                <Typography sx={{ width: isNonMobileScreens ? "77%" : "70%" }}>
-                  <Typography
-                    sx={{
-                      fontSize: "0.9rem",
-                      marginLeft: "0.6rem",
-                      fontWeight: "bold",
-                      "&:hover": {
-                        color: palette.primary.light,
-                        cursor: "pointer",
-                      },
-                    }}
-                    onClick={() => navigate(`/profile/${comment.userId}`)}
-                  >
-                    {comment.name}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      marginTop: "0rem",
-                      marginLeft: "1rem",
-                      overflow: "auto",
-                    }}
-                  >
-                    {comment.comment}
-                  </Typography>
-                </Typography>
-                {user._id === comment.userId &&<IconButton
-                  aria-label="delete"
-                  size="small"
-                  onClick={() => deleteComment(index)}
+        <>
+          <Box sx={{ mt: "0.5rem", overflowY: "scroll", maxHeight: "7rem" }}>
+            {comments.map((comment, index) => (
+              <Box key={`${name}-${index}`}>
+                <Divider />
+                <Typography
+                  sx={{
+                    color: main,
+                    m: "0.5rem 0",
+                    pl: "1rem",
+                    display: "flex",
+                  }}
                 >
-                  <DeleteIcon />
-                </IconButton>}
-              </Typography>
-            </Box>
-          ))}
+                  <UserImage image={comment.image} size="40px" />
+                  <Typography
+                    sx={{ width: isNonMobileScreens ? "77%" : "70%" }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "0.9rem",
+                        marginLeft: "0.6rem",
+                        fontWeight: "bold",
+                        "&:hover": {
+                          color: palette.primary.light,
+                          cursor: "pointer",
+                        },
+                      }}
+                      onClick={() => navigate(`/profile/${comment.userId}`)}
+                    >
+                      {comment.name}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        marginTop: "0rem",
+                        marginLeft: "1rem",
+                        overflow: "auto",
+                      }}
+                    >
+                      {comment.comment}
+                    </Typography>
+                  </Typography>
+                  {user._id === comment.userId && (
+                    <IconButton
+                      aria-label="delete"
+                      size="small"
+                      onClick={() => deleteComment(index)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
           <form style={{ marginTop: "1.2rem" }} onSubmit={submitHandler}>
             <Button
               variant="outlined"
@@ -231,7 +243,7 @@ const PostWidget = ({
             </Dialog>
             <TextField
               label="Add your comment here"
-              onChange={(e) => setComment(e.target.value)}
+              onChange={(e) => setComment(e.target.value.trimLeft())}
               ref={inputRef}
               value={comment}
               name="comment"
@@ -250,7 +262,7 @@ const PostWidget = ({
               sx={{ width: isNonMobileScreens ? "69%" : "65%", ml: "0.5rem" }}
             />
             <Button
-              disabled={!comment || comment.length > 30}
+              disabled={!comment || comment.trim().length > 30}
               type="submit"
               onClick={submitHandler}
               sx={{
@@ -265,7 +277,7 @@ const PostWidget = ({
               POST
             </Button>
           </form>
-        </Box>
+        </>
       )}
     </WidgetWrapper>
   );
