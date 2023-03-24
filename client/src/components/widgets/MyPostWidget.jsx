@@ -63,7 +63,7 @@ const MyPostWidget = ({ picturePath }) => {
         <UserImage image={picturePath} />
         <InputBase
           placeholder="What's on your mind..."
-          onChange={(e) => setPost(e.target.value)}
+          onChange={(e) => setPost(e.target.value.trimLeft())}
           value={post}
           sx={{
             width: "100%",
@@ -155,7 +155,7 @@ const MyPostWidget = ({ picturePath }) => {
         )}
 
         <Button
-          disabled={!post}
+          disabled={!post || !image}
           onClick={handlePost}
           sx={{
             color: palette.background.alt,

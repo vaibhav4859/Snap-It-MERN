@@ -15,7 +15,12 @@ import UpdateProfile from "components/UpdateProfile";
 // jaha bhi use krna h user ko as a prop kro - done
 // picture naayi pr picture aur picturepath dono aa rha h but purani pr picture as a file ni jaari -done
 // profile photo update ni hori baaki sab hora h -done
-// insert comments with scrollbar customized
+// insert comments with scrollbar customized - done
+// email ko tolower while saving
+// profile pr visit krkr comment ni hora
+// update krte time comment mei bhi update kro
+// delete post
+// stop from uploading anything else except image
 // password update problem via otp
 // friend request accept tabhi ho jab accept kri via notification in navbar
 // twitter aur linkedin ka url
