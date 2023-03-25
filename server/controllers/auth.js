@@ -105,8 +105,7 @@ export const update = async (req, res) => {
             await newPost.save();
         });
 
-        const updatedPosts = await Post.find({}).sort({'updatedAt': 1});
-        // updatedPosts.sort('updatedAt');
+        const updatedPosts = await Post.find({}).sort({'createdAt': -1});
         res.status(200).json({ updatedUser, updatedPosts });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
