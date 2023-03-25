@@ -1,8 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/UserSchema.js";
+import Post from '../models/PostSchema.js'
 import { StatusCodes } from 'http-status-codes';
 import fs from 'fs';
+import mongoose from "mongoose";
 
 export const register = async (req, res) => {
     console.log(req.body);
@@ -44,8 +46,6 @@ export const login = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
-        console.log(req.body);
-
         const { password, email, picturePath } = req.body;
         const user = await User.findOne({ email: email });
         if (!user) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "User does not exist." });
@@ -54,9 +54,7 @@ export const update = async (req, res) => {
         if (!isMatch) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Incorrect Password" });
 
         if (user.picturePath !== picturePath) {
-            console.log("dp", user.picturePath, picturePath);
             fs.unlink(`../server/public/assets/${user.picturePath}`, (err => console.log(err)))
-            console.log("changed");
         }
 
         const { id } = req.params;
@@ -71,12 +69,45 @@ export const update = async (req, res) => {
             runValidators: true,
         });
 
-        console.log(updatedUser);
-
         if (!updatedUser) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "User is not updated! " });
 
-        res.status(200).json({ updatedUser });
+        const posts = await Post.find({});
+        // console.log(posts.length, picturePath);
 
+        posts.forEach(async (value, index) => {
+            let newComments = [];
+            for (let comment of value.comments) {
+                if (comment.userId === id) {
+                    newComments.push({
+                        ...comment,
+                        image: picturePath
+                    });
+                } else newComments.push(comment);
+
+                value.comments = newComments;
+            }
+
+            const newId = new mongoose.Types.ObjectId();
+            const post = {
+                firstName: value.firstName,
+                lastName: value.lastName,
+                _id: newId,
+                userId: value.userId,
+                likes: value.likes,
+                comments: value.comments,
+                location: value.location,
+                description: value.description,
+                picturePath: value.picturePath,
+                userPicturePath: value.userPicturePath
+            }
+            await Post.findByIdAndDelete({ _id: value.id });
+            const newPost = new Post(post);
+            await newPost.save();
+        });
+
+        const updatedPosts = await Post.find({}).sort({'updatedAt': 1});
+        // updatedPosts.sort('updatedAt');
+        res.status(200).json({ updatedUser, updatedPosts });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
