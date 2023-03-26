@@ -24,9 +24,11 @@ import WidgetWrapper from "../UI/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "../../store/index";
+import { useNavigate } from "react-router-dom";
 
 const MyPostWidget = ({ picturePath }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isImage, setIsImage] = useState(false);
   const [image, setImage] = useState(null);
   const [post, setPost] = useState("");
@@ -55,6 +57,7 @@ const MyPostWidget = ({ picturePath }) => {
     dispatch(setPosts({ posts }));
     setImage(null);
     setPost("");
+    navigate('/home');
   };
 
   return (
@@ -81,7 +84,11 @@ const MyPostWidget = ({ picturePath }) => {
           p="1rem"
         >
           <Dropzone
-            acceptedFiles=".jpg,.jpeg,.png"
+            accept={{
+              "image/png": [".png"],
+              "image/jpg": [".jpg"],
+              "image/jpeg": [".jpeg"],
+            }}
             multiple={false}
             onDrop={(acceptedFiles) => setImage(acceptedFiles[0])}
           >

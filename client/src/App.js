@@ -8,6 +8,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "./theme";
 import UpdateProfile from "components/UpdateProfile";
+import UpdatePassword from "components/UpdatePassword";
 
 // auro ki profile visit kro toh mypost widget na dikhe khudki pr dikhe - done
 // 3 friends ke baad scrollbar aa jayega - done
@@ -16,12 +17,15 @@ import UpdateProfile from "components/UpdateProfile";
 // picture naayi pr picture aur picturepath dono aa rha h but purani pr picture as a file ni jaari -done
 // profile photo update ni hori baaki sab hora h -done
 // insert comments with scrollbar customized - done
-// email ko tolower while saving
-// profile pr visit krkr comment ni hora
-// update krte time comment mei bhi update kro
-// delete post
-// stop from uploading anything else except image
-// password update problem via otp
+// delete post - done
+// email ko tolower while saving  - done
+// profile pr visit krkr comment ni hora - done
+// stop from uploading anything else except image - done
+// friends update in user widget - done
+// update krte time comment mei bhi update kro image - done
+// password update problem via otp - done
+// emoji in ad new post 
+// update profile/password ka button in user widget
 // friend request accept tabhi ho jab accept kri via notification in navbar
 // twitter aur linkedin ka url
 // chatting
@@ -31,7 +35,7 @@ function App() {
   const user = useSelector((state) => state.user);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const isAuth = Boolean(useSelector((state) => state.token));
-  // console.log(user._id);
+  // console.log(user);
 
   return (
     <div className="app">
@@ -41,8 +45,9 @@ function App() {
           <Routes>
             <Route path="/" element={<LoginPage />} />
             <Route path="/home" element={isAuth ? <HomePage user={user} /> : <Navigate to="/" />} />
-            <Route path="/profile/:userID" element={isAuth ? <ProfilePage id={user._id} /> : <Navigate to="/" />} />
+            <Route path="/profile/:userID" element={isAuth ? <ProfilePage user={user} id={user._id} /> : <Navigate to="/" />} />
             <Route path="/update/:id" element={isAuth ? <UpdateProfile user={user} /> : <Navigate to="/" />} />
+            <Route path="/update/:id/password" element={isAuth ? <UpdatePassword user={user} /> : <Navigate to="/" />} />
           </Routes>
         </ThemeProvider>
       </BrowserRouter>

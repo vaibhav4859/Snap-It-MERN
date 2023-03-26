@@ -20,16 +20,15 @@ import {
   Menu,
   Close,
 } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setMode, setLogout } from "../store/index";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "./UI/FlexBetween";
 
-const NavBar = () => {
+const NavBar = (props) => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   // const mode = useSelector((state) => state.mode);
 
@@ -40,9 +39,16 @@ const NavBar = () => {
   const primaryLight = theme.palette.primary.light;
   const alt = theme.palette.background.alt;
 
-  const fullName = `${user?.firstName} ${user?.lastName}`;
+  const fullName = `${props.user?.firstName} ${props.user?.lastName}`;
   return (
-    <FlexBetween padding="1rem 6%" backgroundColor={alt}>
+    <FlexBetween
+      padding="1rem 6%"
+      backgroundColor={alt}
+      position="sticky"
+      top="0"
+      left="0"
+      zIndex="99"
+    >
       <FlexBetween gap="1.75rem">
         <Typography
           fontWeight="bold"
@@ -106,7 +112,7 @@ const NavBar = () => {
             >
               <MenuItem
                 value={fullName}
-                onClick={() => navigate(`/profile/${user._id}`)}
+                onClick={() => navigate(`/profile/${props.user._id}`)}
               >
                 <Typography>
                   {fullName.length <= 13
@@ -114,8 +120,13 @@ const NavBar = () => {
                     : `${fullName.slice(0, 13)}...`}
                 </Typography>
               </MenuItem>
-              <MenuItem onClick={() => navigate(`/update/${user._id}`)}>
+              <MenuItem onClick={() => navigate(`/update/${props.user._id}`)}>
                 Update Profile
+              </MenuItem>
+              <MenuItem
+                onClick={() => navigate(`/update/${props.user._id}/password`)}
+              >
+                Update Password
               </MenuItem>
               <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
             </Select>
@@ -191,7 +202,7 @@ const NavBar = () => {
               >
                 <MenuItem
                   value={fullName}
-                  onClick={() => navigate(`/profile/${user._id}`)}
+                  onClick={() => navigate(`/profile/${props.user._id}`)}
                 >
                   <Typography>
                     {fullName.length <= 13
@@ -199,8 +210,13 @@ const NavBar = () => {
                       : `${fullName.slice(0, 13)}...`}
                   </Typography>
                 </MenuItem>
-                <MenuItem onClick={() => navigate(`/update/${user._id}`)}>
+                <MenuItem onClick={() => navigate(`/update/${props.user._id}`)}>
                   Update Profile
+                </MenuItem>
+                <MenuItem
+                  onClick={() => navigate(`/update/${props.user._id}/password`)}
+                >
+                  Update Password
                 </MenuItem>
                 <MenuItem onClick={() => dispatch(setLogout())}>
                   Log Out

@@ -69,6 +69,7 @@ const Form = () => {
 
   const register = async (values, onSubmitProps) => {
     // this allows us to send form info with image
+    values.email = values.email.toLowerCase();
     const formData = new FormData();
     for (let value in values) {
       formData.append(value, values[value]);
@@ -97,6 +98,7 @@ const Form = () => {
   };
 
   const login = async (values, onSubmitProps) => {
+    values.email = values.email.toLowerCase();
     onSubmitProps.resetForm();
     const loggedInResponse = await fetch(
       "https://snap-it-backend.onrender.com/auth/login",
@@ -202,13 +204,16 @@ const Form = () => {
                   p="1rem"
                 >
                   <Dropzone
-                    acceptedFiles=".jpg,.jpeg,.png"
+                    accept={{
+                      "image/png": [".png"],
+                      "image/jpg": [".jpg"],
+                      "image/jpeg": [".jpeg"],
+                    }}
                     multiple={false}
-                    onDrop={(acceptedFiles) =>{
-                      setFieldValue("picture", acceptedFiles[0])
+                    onDrop={(acceptedFiles) => {
+                      setFieldValue("picture", acceptedFiles[0]);
                       // console.log(acceptedFiles);
-                    }
-                    }
+                    }}
                   >
                     {({ getRootProps, getInputProps }) => (
                       <Box

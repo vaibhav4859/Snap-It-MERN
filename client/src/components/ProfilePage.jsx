@@ -36,7 +36,7 @@ const ProfilePage = (props) => {
 
   return (
     <Box>
-      <Navbar />
+      <Navbar user={props.user}/>
       <Box
         width="100%"
         padding="2rem 6%"
@@ -57,7 +57,7 @@ const ProfilePage = (props) => {
             <MyPostWidget picturePath={user.picturePath} />
           )}
           <Box m="2rem 0" />
-          <PostsWidget userId={userID} name={`${user.firstName} ${user.lastName}`} isProfile />
+          <PostsWidget userId={userID} user={props.user} isProfile name={`${user.firstName} ${user.lastName}`}  />
         </Box>
       </Box>
     </Box>

@@ -117,18 +117,18 @@ export const update = async (req, res) => {
 export const sendMail = async (req, res) => {
     try {
         const { name, email } = req.body;
-        console.log(name, email);
+        // console.log(name, email);
         const otp = Math.floor(Math.random() * 10000);
         if (otp < 1000 || otp > 9999) otp = 6969;
 
         let user = await User.findOne({ email: email });
         user.otp = otp;
-        console.log(user);
+        // console.log(user);
 
         const updatedUser = await User.findOneAndUpdate({ email: email }, {
             ...user,
         }, { new: true, runValidators: true });
-        console.log(updatedUser);
+        // console.log(updatedUser);
 
         const response = await axios({
             method: 'post',

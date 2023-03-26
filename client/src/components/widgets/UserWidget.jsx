@@ -9,8 +9,9 @@ import UserImage from "../UI/UserImage";
 import FlexBetween from "../UI/FlexBetween";
 import WidgetWrapper from "../UI/WidgetWrapper";
 import { useNavigate } from "react-router-dom";
-import LinkedInImg from '../../assets/linkedin.png';
-import TwitterImg from '../../assets/twitter.png';
+import LinkedInImg from "../../assets/linkedin.png";
+import TwitterImg from "../../assets/twitter.png";
+import { useEffect } from "react";
 
 const UserWidget = (props) => {
   const { palette } = useTheme();
@@ -18,6 +19,7 @@ const UserWidget = (props) => {
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
+  useEffect(() => {}, [props.user]);
 
   if (!props.user) return null;
 
@@ -30,6 +32,7 @@ const UserWidget = (props) => {
     impressions,
     friends,
   } = props.user;
+
 
   return (
     <WidgetWrapper>

@@ -20,6 +20,7 @@ import Dropzone from "react-dropzone";
 import FlexBetween from "./UI/FlexBetween";
 import NavBar from "./NavBar";
 import { setLogin } from "store";
+import { setPosts } from "store";
 
 const validationSchema = yup.object().shape({
   firstName: yup.string().required("required").min(2).max(12),
@@ -32,7 +33,7 @@ const validationSchema = yup.object().shape({
 });
 
 const UpdateProfile = (props) => {
-  const [clicked, setCliked] = useState(false);
+  const [clicked, setClicked] = useState(false);
   const [error, setError] = useState(false);
   const token = useSelector((state) => state.token);
   const { id } = useParams();
@@ -53,10 +54,7 @@ const UpdateProfile = (props) => {
   };
 
   const handleFormSubmit = async (values, onSubmitProps) => {
-    setCliked(true);
-    // values.picturePath = values.picture.name;
-    // console.log(values.picture, values.picture.name);
-    // delete values.picture;
+    setClicked(true);
     const formData = new FormData();
     for (let value in values) {
       formData.append(value, values[value]);
@@ -64,7 +62,7 @@ const UpdateProfile = (props) => {
     if (values.picture.name) {
       formData.append("picturePath", values.picture.name);
     }
-    // formData["picture"] = values.picture;
+
     for (var key of formData.entries()) {
       console.log(key[0] + ", " + key[1]);
     }
@@ -73,22 +71,26 @@ const UpdateProfile = (props) => {
       `https://snap-it-backend.onrender.com/auth/update/${id}`,
       {
         method: "PATCH",
-        Authorization: `Bearer ${token}`,
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       }
     );
-    const savedUser = await savedUserResponse.json();
+    const { updatedUser: savedUser, updatedPosts } =
+      await savedUserResponse.json();
     console.log(savedUser);
     if (savedUser.msg === "Incorrect Password") {
       values.password = "";
       setError(true);
-      setCliked(false);
+      setClicked(false);
       return;
     }
     if (savedUser) {
-      dispatch(setLogin({ user: savedUser.updatedUser, token }));
+      dispatch(setLogin({ user: savedUser, token }));
     }
-    setCliked(false);
+    if (updatedPosts) {
+      dispatch(setPosts({ posts: updatedPosts }));
+    }
+    setClicked(false);
     navigate("/home");
   };
 
@@ -100,7 +102,7 @@ const UpdateProfile = (props) => {
 
   return (
     <Box>
-      <NavBar />
+      <NavBar user={props.user} />
       <Box
         width={isNonMobileScreens ? "50%" : "93%"}
         p="2rem"
@@ -124,6 +126,7 @@ const UpdateProfile = (props) => {
             handleChange,
             handleSubmit,
             setFieldValue,
+            resetForm
           }) => (
             <form onSubmit={handleSubmit}>
               <Box
@@ -190,7 +193,11 @@ const UpdateProfile = (props) => {
                     p="1rem"
                   >
                     <Dropzone
-                      acceptedFiles=".jpg,.jpeg,.png"
+                      accept={{
+                        "image/png": [".png"],
+                        "image/jpg": [".jpg"],
+                        "image/jpeg": [".jpeg"],
+                      }}
                       multiple={false}
                       onDrop={(acceptedFiles) => {
                         setFieldValue("picture", acceptedFiles[0]);
@@ -245,6 +252,28 @@ const UpdateProfile = (props) => {
                   sx={{ gridColumn: "span 4" }}
                 />
               </Box>
+
+              {/* Forgot Password */}
+              <Typography
+                onClick={() => {
+                  resetForm();
+                  navigate(`/update/${id}/password`);
+                }}
+                sx={{
+                  mt: "1rem",
+                  ml:"0.5rem",
+                  fontWeight: "bold",
+                  width: "8rem",
+                  textDecoration: "underline",
+                  color: theme.palette.primary.main,
+                  "&:hover": {
+                    cursor: "pointer",
+                    color: theme.palette.primary.light,
+                  },
+                }}
+              >
+                Forgot Password?
+              </Typography>
 
               {/* ALERT */}
               {error && (
