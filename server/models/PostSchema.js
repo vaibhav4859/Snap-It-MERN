@@ -20,6 +20,14 @@ const postSchema = mongoose.Schema({
     comments: {
         type: Array,
     },
+    showLikes:{
+        type:Boolean,
+        default: true,
+    },
+    showComments:{
+        type:Boolean,
+        default: true,
+    },
     location: String,
     description: String,
     picturePath: String,

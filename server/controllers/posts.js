@@ -20,7 +20,7 @@ export const createPost = async (req, res) => {
 
         await newPost.save();
 
-        const post = await Post.find().sort({'createdAt': -1});
+        const post = await Post.find().sort({ 'createdAt': -1 });
         res.status(StatusCodes.CREATED).json(post);
     } catch (error) {
         res.status(StatusCodes.CONFLICT).json({ message: error.message });
@@ -29,7 +29,7 @@ export const createPost = async (req, res) => {
 
 export const getFeedPosts = async (req, res) => {
     try {
-        const post = await Post.find().sort({'createdAt': -1});
+        const post = await Post.find().sort({ 'createdAt': -1 });
         res.status(StatusCodes.OK).json(post);
     } catch (error) {
         res.status(StatusCodes.NOT_FOUND).json({ message: error.message });
@@ -39,7 +39,7 @@ export const getFeedPosts = async (req, res) => {
 export const getUserPosts = async (req, res) => {
     try {
         const { userId } = req.params;
-        const post = await Post.find({ userId }).sort({'createdAt': -1});
+        const post = await Post.find({ userId }).sort({ 'createdAt': -1 });
         res.status(StatusCodes.OK).json(post);
     } catch (error) {
         res.status(StatusCodes.NOT_FOUND).json({ message: error.message });
@@ -126,6 +126,27 @@ export const deletePost = async (req, res) => {
         const updatedPosts = await Post.find();
 
         res.status(StatusCodes.OK).json(updatedPosts);
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+    }
+}
+
+export const hideLikes = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const {update} = req.body;
+
+        const post = await Post.findById({ _id: id });
+        if (!post) res.status(404).json({ msg: `No post with id : ${id}` });
+
+        if(update === "like") post.showLikes = !post.showLikes;
+        else if(update === "comment") post.showComments = !post.showComments;
+
+        const updatedPost = await Post.findOneAndUpdate({ _id: id }, {
+            ...post,
+        }, { new: true, runValidators: true });
+
+        res.status(StatusCodes.OK).json(updatedPost);
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
     }

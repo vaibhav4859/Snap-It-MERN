@@ -32,6 +32,14 @@ const UserSchema = new mongoose.Schema({
         type: Array,
         default: [],
     },
+    linkedinUrl: {
+        type: String,
+        default: ""
+    },
+    twitterUrl: {
+        type: String,
+        default: ""
+    },
     occupation: String,
     location: String,
     viewedProfile: Number,

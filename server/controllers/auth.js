@@ -166,10 +166,8 @@ export const sendMail = async (req, res) => {
 export const verifyOtp = async (req, res) => {
     try {
         const { enteredOtp, email } = req.body;
-        console.log(req.body);
         const user = await User.find({ email: email });
-        console.log(user[0]);
-        console.log(user[0].otp, enteredOtp, user[0].otp === enteredOtp);
+        
         if (String(user[0].otp) === String(enteredOtp)) res.status(StatusCodes.OK).json(true);
         else res.status(StatusCodes.OK).json(false);
     } catch (error) {
