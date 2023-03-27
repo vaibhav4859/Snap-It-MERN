@@ -75,7 +75,6 @@ const Form = () => {
       formData.append(value, values[value]);
     }
     formData.append("picturePath", values.picture.name);
-    console.log(values.picture, values.picture.name, formData.picturePath);
     const savedUserResponse = await fetch(
       "https://snap-it-backend.onrender.com/auth/register",
       {
@@ -85,7 +84,6 @@ const Form = () => {
     );
 
     const savedUser = await savedUserResponse.json();
-    console.log(savedUser);
     onSubmitProps.resetForm();
     setCliked(false);
     if (savedUser.error) {

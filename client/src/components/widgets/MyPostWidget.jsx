@@ -16,12 +16,15 @@ import {
   Button,
   IconButton,
   useMediaQuery,
+  Dialog,
 } from "@mui/material";
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
+import EmojiPicker from "emoji-picker-react";
 import FlexBetween from "../UI/FlexBetween";
 import Dropzone from "react-dropzone";
 import UserImage from "../UI/UserImage";
 import WidgetWrapper from "../UI/WidgetWrapper";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "../../store/index";
 import { useNavigate } from "react-router-dom";
@@ -32,12 +35,21 @@ const MyPostWidget = ({ picturePath }) => {
   const [isImage, setIsImage] = useState(false);
   const [image, setImage] = useState(null);
   const [post, setPost] = useState("");
+  const [open, setOpen] = useState(false);
+  const inputRef = useRef();
   const { palette } = useTheme();
   const { _id } = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const mediumMain = palette.neutral.mediumMain;
   const medium = palette.neutral.medium;
+
+  const handleOpen = () => setOpen(true);
+
+  const handleClose = () => {
+    setOpen(false);
+    inputRef.current.focus();
+  };
 
   const handlePost = async () => {
     const formData = new FormData();
@@ -47,7 +59,9 @@ const MyPostWidget = ({ picturePath }) => {
       formData.append("picture", image);
       formData.append("picturePath", image.name);
     }
-
+    
+    setImage(null);
+    setPost("");
     const response = await fetch(`https://snap-it-backend.onrender.com/posts`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
@@ -55,9 +69,7 @@ const MyPostWidget = ({ picturePath }) => {
     });
     const posts = await response.json();
     dispatch(setPosts({ posts }));
-    setImage(null);
-    setPost("");
-    navigate('/home');
+    navigate("/home");
   };
 
   return (
@@ -74,7 +86,27 @@ const MyPostWidget = ({ picturePath }) => {
             borderRadius: "2rem",
             padding: "1rem 2rem",
           }}
-        />
+        ></InputBase>
+        <Button
+          variant="outlined"
+          onClick={handleOpen}
+          sx={{ height: "2.3rem", minWidth: "10%", padding: 0 }}
+        >
+          <EmojiEmotionsIcon />
+        </Button>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          sx={{ top: 0, left: 0, position: "fixed" }}
+        >
+          <EmojiPicker
+            onEmojiClick={(e) => {
+              setPost(`${post} ${e.emoji}`);
+              handleClose();
+            }}
+            height="350px"
+          />
+        </Dialog>
       </FlexBetween>
       {isImage && (
         <Box

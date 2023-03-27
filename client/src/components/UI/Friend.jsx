@@ -10,12 +10,20 @@ import {
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setFriends, setPosts } from "../../store/index";
+import { setFriends, setPost, setPosts } from "../../store/index";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import { useState } from "react";
 
-const Friend = ({ friendId, name, subtitle, userPicturePath, postId }) => {
+const Friend = ({
+  friendId,
+  name,
+  subtitle,
+  userPicturePath,
+  postId,
+  showLikes,
+  showComments,
+}) => {
   const [list, setList] = useState(null);
   const open = Boolean(list);
   const dispatch = useDispatch();
@@ -50,7 +58,6 @@ const Friend = ({ friendId, name, subtitle, userPicturePath, postId }) => {
   };
 
   const deletePost = async () => {
-    console.log(postId, "hi");
     const response = await fetch(
       `https://snap-it-backend.onrender.com/posts/${postId}/delete`,
       {
@@ -62,10 +69,22 @@ const Friend = ({ friendId, name, subtitle, userPicturePath, postId }) => {
       }
     );
     const posts = await response.json();
-    dispatch(setPosts({posts: posts}));  
-    console.log(posts);
+    dispatch(setPosts({ posts: posts }));
     setList(null);
-    navigate('/home');
+    navigate("/home");
+  };
+
+  const hideHandler = async (hide) => {
+    const response = await fetch(`https://snap-it-backend.onrender.com/posts/${postId}/hide`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ update: hide }),
+    });
+    const updatedPost = await response.json();
+    dispatch(setPost({ post: updatedPost }));
   };
 
   return (
@@ -126,6 +145,22 @@ const Friend = ({ friendId, name, subtitle, userPicturePath, postId }) => {
               },
             }}
           >
+            <MenuItem
+              onClick={() => {
+                hideHandler("like");
+              }}
+              // sx={{ fontWeight: "700" }}
+            >
+              {showLikes ? "Hide Likes" : "Show Likes"}
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                hideHandler("comment");
+              }}
+              // sx={{ fontWeight: "700" }}
+            >
+              {showComments ? "Turn Off Commenting" : "Turn On Commenting"}
+            </MenuItem>
             <MenuItem
               onClick={deletePost}
               sx={{ color: "rgb(237,73,86)", fontWeight: "700" }}

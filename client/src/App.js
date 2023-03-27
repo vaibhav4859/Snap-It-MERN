@@ -24,9 +24,11 @@ import UpdatePassword from "components/UpdatePassword";
 // friends update in user widget - done
 // update krte time comment mei bhi update kro image - done
 // password update problem via otp - done
-// emoji in ad new post 
-// update profile/password ka button in user widget
+// emoji in add new post  - done
+// update profile/password ka button in user widget - done
+// show/ hide likes and comments
 // friend request accept tabhi ho jab accept kri via notification in navbar
+// delete post krne pr bhi unlink kro image ko
 // twitter aur linkedin ka url
 // chatting
 

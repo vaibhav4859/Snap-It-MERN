@@ -4,7 +4,7 @@ import {
   LocationOnOutlined,
   WorkOutlineOutlined,
 } from "@mui/icons-material";
-import { Box, Typography, Divider, useTheme } from "@mui/material";
+import { Box, Typography, Divider, useTheme, Button } from "@mui/material";
 import UserImage from "../UI/UserImage";
 import FlexBetween from "../UI/FlexBetween";
 import WidgetWrapper from "../UI/WidgetWrapper";
@@ -16,6 +16,7 @@ import { useEffect } from "react";
 const UserWidget = (props) => {
   const { palette } = useTheme();
   const navigate = useNavigate();
+  const theme = useTheme();
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
@@ -32,7 +33,6 @@ const UserWidget = (props) => {
     impressions,
     friends,
   } = props.user;
-
 
   return (
     <WidgetWrapper>
@@ -117,7 +117,7 @@ const UserWidget = (props) => {
           <EditOutlined sx={{ color: main }} />
         </FlexBetween>
 
-        <FlexBetween gap="1rem">
+        <FlexBetween gap="1rem" mb="1rem">
           <FlexBetween gap="1rem">
             <img src={LinkedInImg} alt="linkedin" />
             <Box>
@@ -129,6 +129,49 @@ const UserWidget = (props) => {
           </FlexBetween>
           <EditOutlined sx={{ color: main }} />
         </FlexBetween>
+
+        <Divider />
+
+        <Button
+          fullWidth
+          type="button"
+          sx={{
+            m: "1rem 0",
+            p: "0.3rem",
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.background.alt,
+            "&:hover": {
+              color: theme.palette.primary.main,
+            },
+          }}
+          onClick={() => navigate(`/update/${props.user._id}`)}
+        >
+          UPDATE PROFILE
+        </Button>
+        <Typography
+          color={main}
+          fontWeight="500"
+          textAlign="center"
+          margin="-0.6rem 0"
+        >
+          OR
+        </Typography>
+        <Button
+          fullWidth
+          type="button"
+          sx={{
+            m: "1rem 0",
+            p: "0.3rem",
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.background.alt,
+            "&:hover": {
+              color: theme.palette.primary.main,
+            },
+          }}
+          onClick={() => navigate(`/update/${props.user._id}/password`)}
+        >
+          UPDATE PASSWORD
+        </Button>
       </Box>
     </WidgetWrapper>
   );

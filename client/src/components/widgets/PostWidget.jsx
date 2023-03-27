@@ -39,6 +39,8 @@ const PostWidget = ({
   userPicturePath,
   likes,
   comments,
+  showLikes,
+  showComments,
 }) => {
   const [isComments, setIsComments] = useState(false);
   const [comment, setComment] = useState("");
@@ -128,6 +130,9 @@ const PostWidget = ({
         subtitle={location}
         userPicturePath={userPicturePath}
         postId={postId}
+        user={user}
+        showComments={showComments}
+        showLikes={showLikes}
       />
       <Typography color={main} sx={{ mt: "1rem" }}>
         {description}
@@ -143,30 +148,34 @@ const PostWidget = ({
       )}
       <FlexBetween mt="0.25rem">
         <FlexBetween gap="1rem">
-          <FlexBetween gap="0.3rem">
-            <IconButton onClick={patchLike}>
-              {isLiked ? (
-                <FavoriteOutlined sx={{ color: primary }} />
-              ) : (
-                <FavoriteBorderOutlined />
-              )}
-            </IconButton>
-            <Typography>{likeCount}</Typography>
-          </FlexBetween>
+          {showLikes && (
+            <FlexBetween gap="0.3rem">
+              <IconButton onClick={patchLike}>
+                {isLiked ? (
+                  <FavoriteOutlined sx={{ color: primary }} />
+                ) : (
+                  <FavoriteBorderOutlined />
+                )}
+              </IconButton>
+              <Typography>{likeCount}</Typography>
+            </FlexBetween>
+          )}
 
-          <FlexBetween gap="0.3rem">
-            <IconButton onClick={() => setIsComments(!isComments)}>
-              <ChatBubbleOutlineOutlined />
-            </IconButton>
-            <Typography>{comments.length}</Typography>
-          </FlexBetween>
+          {showComments && (
+            <FlexBetween gap="0.3rem">
+              <IconButton onClick={() => setIsComments(!isComments)}>
+                <ChatBubbleOutlineOutlined />
+              </IconButton>
+              <Typography>{comments.length}</Typography>
+            </FlexBetween>
+          )}
         </FlexBetween>
 
         <IconButton>
           <ShareOutlined />
         </IconButton>
       </FlexBetween>
-      {isComments && (
+      {isComments && showComments && (
         <>
           <Box sx={{ mt: "0.5rem", overflowY: "scroll", maxHeight: "7rem" }}>
             {comments.map((comment, index) => (
