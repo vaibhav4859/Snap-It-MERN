@@ -28,11 +28,9 @@ import UpdatePassword from "components/UpdatePassword";
 // update profile/password ka button in user widget - done
 // show/ hide likes and comments - done
 // twitter aur linkedin ka url - done
-// suggested for you
+// suggested for you 
 // close input field for social profiles bug
-// check kro jo social profile daali h vo real mei valid h ya nhi
 // friend request accept tabhi ho jab accept kri via notification in navbar
-// delete post krne pr bhi unlink kro image ko
 // otp while registering
 // infinite scrolling implement kro
 // chatting

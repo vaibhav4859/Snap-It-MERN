@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Box,
   Button,
@@ -35,7 +35,7 @@ const loginSchema = yup.object().shape({
   password: yup.string().required("required").min(5),
 });
 
-const initialValuesRegister = {
+const initialValues = {
   firstName: "",
   lastName: "",
   email: "",
@@ -43,17 +43,21 @@ const initialValuesRegister = {
   location: "",
   occupation: "",
   picture: "",
+  otp: "",
 };
 
-const initialValuesLogin = {
-  email: "",
-  password: "",
-};
+// const initialValuesLogin = {
+//   email: "",
+//   password: "",
+// };
 
 const Form = () => {
   const [pageType, setPageType] = useState("login");
   const [error, setError] = useState("");
-  const [clicked, setCliked] = useState(false);
+  const [clicked, setClicked] = useState(false);
+  const [otpClick, setOtpClick] = useState(false);
+  const [otpVerify, setOtpVerify] = useState(false);
+  const otpRef = useRef(null);
   const { palette } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -64,10 +68,16 @@ const Form = () => {
   if (error) {
     setTimeout(() => {
       setError(false);
-    }, 5000);
+      setOtpClick(false);
+      setOtpVerify(false);
+    }, 2500);
   }
 
-  const register = async (values, onSubmitProps) => {
+  console.log(pageType);
+
+  const register = async (values, { resetForm }) => {
+    await verifyOtp();
+
     // this allows us to send form info with image
     values.email = values.email.toLowerCase();
     const formData = new FormData();
@@ -84,14 +94,18 @@ const Form = () => {
     );
 
     const savedUser = await savedUserResponse.json();
-    onSubmitProps.resetForm();
-    setCliked(false);
+    resetForm();
+    setClicked(false);
     if (savedUser.error) {
       setError("User with this email already exists!");
+      setOtpClick(false);
+      // setPageType("register");
+      // window.location.reload();
+      // setPageType("register");
       return;
     }
     if (savedUser) {
-      setPageType("login");
+      // setPageType("login");
     }
   };
 
@@ -107,7 +121,7 @@ const Form = () => {
       }
     );
     const loggedIn = await loggedInResponse.json();
-    setCliked(false);
+    setClicked(false);
     if (loggedIn.msg) {
       setError("Invalid Credentials!");
       return;
@@ -119,16 +133,29 @@ const Form = () => {
   };
 
   const handleFormSubmit = async (values, onSubmitProps) => {
-    setCliked(true);
+    setClicked(true);
     if (isLogin) await login(values, onSubmitProps);
     if (isRegister) await register(values, onSubmitProps);
+  };
+
+  const sendOtp = async (values, onSubmitProps) => {
+    // setClicked(true);
+    // console.log(otpRef.current.values.otp);
+    setOtpClick(true);
+    // setClicked(false);
+  };
+
+  const verifyOtp = async (values, onSubmitProps) => {
+    setOtpVerify(true);
   };
 
   return (
     <Formik
       onSubmit={handleFormSubmit}
-      initialValues={isLogin ? initialValuesLogin : initialValuesRegister}
+      // initialValues={isLogin ? initialValuesLogin : initialValuesRegister}
+      initialValues={initialValues}
       validationSchema={isLogin ? loginSchema : registerSchema}
+      innerRef={otpRef}
     >
       {({
         values,
@@ -257,6 +284,41 @@ const Form = () => {
               helperText={touched.password && errors.password}
               sx={{ gridColumn: "span 4" }}
             />
+            {!error && !isLogin && otpClick && (
+              <TextField
+                label="Enter your Otp"
+                type="text"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.otp}
+                name="otp"
+                error={
+                  Boolean(touched.otp) &&
+                  otpClick &&
+                  (!values.otp || values.otp.length !== 4)
+                }
+                helperText={
+                  values.otp && values.otp.length !== 4
+                    ? "Otp must be exactly 4 characters"
+                    : null
+                }
+                sx={{ gridColumn: "span 4" }}
+              />
+            )}
+            {!error && !isLogin && otpClick && !otpVerify && (
+              <Typography
+                fontWeight="400"
+                variant="h5"
+                sx={{
+                  width: "20rem",
+                  color: palette.primary.main,
+                  mt: "-1.3rem",
+                  ml: "0.4rem",
+                }}
+              >
+                Check your e-mail and enter the otp
+              </Typography>
+            )}
           </Box>
 
           {/* ALERT */}
@@ -289,7 +351,9 @@ const Form = () => {
           <Box>
             <Button
               fullWidth
-              type="submit"
+              type={
+                isLogin || otpClick ? "submit" : "button"
+              }
               sx={{
                 m: "2rem 0",
                 p: "1rem",
@@ -313,10 +377,21 @@ const Form = () => {
                     !values.location ||
                     !values.occupation ||
                     !values.picture ||
-                    Object.keys(errors).length !== 0)
+                    Object.keys(errors).length !== 0) ||
+                (!isLogin &&
+                  otpClick &&
+                  (!values.otp || values.otp.length !== 4))
               }
+              onClick={!otpClick ? sendOtp : null}
             >
-              {!clicked ? (isLogin ? "LOGIN" : "REGISTER") : "WAIT..."}
+              {!clicked
+                ? isLogin
+                  ? "LOGIN"
+                  : !isLogin && !otpClick
+                  ? "VERIFY EMAIL / SEND OTP"
+                  : "VERIFY OTP AND REGISTER"
+                : "WAIT..."}
+                {console.log(errors, otpClick, values.otp)}
             </Button>
             <Typography
               onClick={() => {

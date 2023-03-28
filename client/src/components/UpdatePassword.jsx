@@ -26,7 +26,7 @@ const validationSchema = yup.object().shape({
     .string()
     .required("required")
     .min(5)
-    .oneOf([yup.ref("newPassword"), null], "Passwprd does not match"),
+    .oneOf([yup.ref("newPassword"), null], "Password does not match"),
 });
 
 const UpdatePassword = (props) => {

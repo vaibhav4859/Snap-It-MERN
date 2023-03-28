@@ -17,6 +17,15 @@ import postRoutes from './routes/postRoutes.js';
 // Configurations
 const app = express();
 dotenv.config();
+
+app.use((req, res, next) => {
+    res.append("Access-Control-Allow-Origin", ["*"]);
+    res.append("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH");
+    res.append("Access-Control-Allow-Headers", "Content-Type,Authorization");
+    res.append("Access-Control-Allow-Credentials", "true");
+    next();
+});
+
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));

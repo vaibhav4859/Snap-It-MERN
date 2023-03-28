@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/UserSchema.js";
 import Post from '../models/PostSchema.js'
 import { StatusCodes } from 'http-status-codes';
-import fs from 'fs';
+// import fs from 'fs';
 import mongoose from "mongoose";
 import axios from 'axios';
 
@@ -55,9 +55,9 @@ export const update = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Incorrect Password" });
 
-        if (user.picturePath !== picturePath) {
-            fs.unlink(`../server/public/assets/${user.picturePath}`, (err => console.log(err)))
-        }
+        // if (user.picturePath !== picturePath) {
+        //     fs.unlink(`../server/public/assets/${user.picturePath}`, (err => console.log(err)))
+        // } // remove photo from backend that is no longer in use
 
         const { id } = req.params;
         const salt = await bcrypt.genSalt();
