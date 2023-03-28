@@ -26,10 +26,15 @@ import UpdatePassword from "components/UpdatePassword";
 // password update problem via otp - done
 // emoji in add new post  - done
 // update profile/password ka button in user widget - done
-// show/ hide likes and comments
+// show/ hide likes and comments - done
+// twitter aur linkedin ka url - done
+// suggested for you
+// close input field for social profiles bug
+// check kro jo social profile daali h vo real mei valid h ya nhi
 // friend request accept tabhi ho jab accept kri via notification in navbar
 // delete post krne pr bhi unlink kro image ko
-// twitter aur linkedin ka url
+// otp while registering
+// infinite scrolling implement kro
 // chatting
 
 function App() {
@@ -37,7 +42,7 @@ function App() {
   const user = useSelector((state) => state.user);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const isAuth = Boolean(useSelector((state) => state.token));
-  // console.log(user);
+  console.log(user);
 
   return (
     <div className="app">
