@@ -146,7 +146,7 @@ const Form = () => {
     setClicked(true);
     setOtpClick(true);
     // console.log(otpRef.current.values.email);
-    const response = await fetch(`http://localhost:5000/auth/register/otp`, {
+    const response = await fetch(`https://snap-it-backend.onrender.com/auth/register/otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -170,7 +170,7 @@ const Form = () => {
 
   
   const verifyOtp = async (values, onSubmitProps) => {
-    console.log(String(otpRef.current.values.otp), String(validOtp));
+    // console.log(String(otpRef.current.values.otp), String(validOtp));
     if (String(otpRef.current.values.otp) === String(validOtp)) return true;
     return false;
   };
