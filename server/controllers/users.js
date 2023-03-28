@@ -64,3 +64,21 @@ export const addRemoveFriend = async (req, res) => {
         res.status(StatusCodes.NOT_FOUND).json({ message: err.message });
     }
 };
+
+export const updateSocialProfile = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { linkedinURL, twitterURL } = req.body;
+        const user = await User.findById(id);
+        user.linkedinUrl = linkedinURL;
+        user.twitterUrl = twitterURL;
+        console.log(user);
+        const updatedUser = await User.findOneAndUpdate({ _id: id }, {
+            ...user,
+        }, { new: true, runValidators: true });
+
+        res.status(StatusCodes.OK).json(updatedUser);
+    } catch (error) {
+        res.status(StatusCodes.NOT_FOUND).json({ message: err.message });
+    }
+}
