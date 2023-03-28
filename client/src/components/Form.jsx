@@ -57,6 +57,7 @@ const Form = () => {
   const [clicked, setClicked] = useState(false);
   const [otpClick, setOtpClick] = useState(false);
   const [otpVerify, setOtpVerify] = useState(false);
+  const [validOtp, setValidOtp] = useState("");
   const otpRef = useRef(null);
   const { palette } = useTheme();
   const dispatch = useDispatch();
@@ -70,13 +71,19 @@ const Form = () => {
       setError(false);
       setOtpClick(false);
       setOtpVerify(false);
-    }, 2500);
+    }, 5000);
   }
 
-  console.log(pageType);
-
   const register = async (values, { resetForm }) => {
-    await verifyOtp();
+    const verified = await verifyOtp();
+    if (!verified) {
+      setError("Invalid Otp!");
+      setOtpClick(false);
+      setOtpVerify(false);
+      resetForm();
+      setClicked(false);
+      return;
+    }
 
     // this allows us to send form info with image
     values.email = values.email.toLowerCase();
@@ -99,13 +106,10 @@ const Form = () => {
     if (savedUser.error) {
       setError("User with this email already exists!");
       setOtpClick(false);
-      // setPageType("register");
-      // window.location.reload();
-      // setPageType("register");
       return;
     }
     if (savedUser) {
-      // setPageType("login");
+      setPageType("login");
     }
   };
 
@@ -139,14 +143,36 @@ const Form = () => {
   };
 
   const sendOtp = async (values, onSubmitProps) => {
-    // setClicked(true);
-    // console.log(otpRef.current.values.otp);
+    setClicked(true);
     setOtpClick(true);
-    // setClicked(false);
+    // console.log(otpRef.current.values.email);
+    const response = await fetch(`http://localhost:5000/auth/register/otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: otpRef.current.values.email,
+        name: `${otpRef.current.values.firstName} ${otpRef.current.values.lastName}`,
+      }),
+    });
+    const otp = await response.json();
+    if (otp.error) {
+      setClicked(false);
+      setOtpClick(false);
+      return;
+    }
+    if (otp) {
+      setValidOtp(otp);
+      setClicked(false);
+    }
   };
 
+  
   const verifyOtp = async (values, onSubmitProps) => {
-    setOtpVerify(true);
+    console.log(String(otpRef.current.values.otp), String(validOtp));
+    if (String(otpRef.current.values.otp) === String(validOtp)) return true;
+    return false;
   };
 
   return (
@@ -351,9 +377,7 @@ const Form = () => {
           <Box>
             <Button
               fullWidth
-              type={
-                isLogin || otpClick ? "submit" : "button"
-              }
+              type={isLogin || otpClick ? "submit" : "button"}
               sx={{
                 m: "2rem 0",
                 p: "1rem",
@@ -391,7 +415,7 @@ const Form = () => {
                   ? "VERIFY EMAIL / SEND OTP"
                   : "VERIFY OTP AND REGISTER"
                 : "WAIT..."}
-                {console.log(errors, otpClick, values.otp)}
+              {/* {console.log(errors, otpClick, values.otp)} */}
             </Button>
             <Typography
               onClick={() => {

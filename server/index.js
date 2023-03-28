@@ -8,7 +8,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 import multer from "multer";
 import { fileURLToPath } from "url";
-import { register, login, update } from './controllers/auth.js';
+import { register, login, update, sendRegistrationMail } from './controllers/auth.js';
 import { createPost } from './controllers/posts.js';
 import { authenticationMiddleware } from "./middleware/auth.js";
 import userRoutes from './routes/userRoutes.js';
@@ -53,6 +53,7 @@ app.post('/auth/register', upload.single('picture'), register); // upload is mid
 app.patch('/auth/update/:id', upload.single('picture'), update);
 app.post('/posts', authenticationMiddleware, upload.single('picture'), createPost);
 app.post('/auth/login', login);
+app.post('/auth/register/otp', sendRegistrationMail);
 
 app.use('/users', userRoutes);
 app.use('/posts', postRoutes);

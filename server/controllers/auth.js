@@ -114,6 +114,46 @@ export const update = async (req, res) => {
     }
 }
 
+export const sendRegistrationMail = async (req, res) => {
+    try {
+        const { name, email } = req.body;
+        const otp = Math.floor(Math.random() * 10000);
+        if (otp < 1000 || otp > 9999) otp = 6969;
+        console.log(otp);
+
+        const response = await axios({
+            method: 'post',
+            url: 'https://api.sendinblue.com/v3/smtp/email',
+            headers: {
+                'api-key': process.env.API_KEY,
+                'content-type': 'application/json'
+            },
+            data: {
+                sender: {
+                    name: 'Snap-It',
+                    email: 'vsachdeva4859@gmail.com'
+                }, to: [{
+                    email: email,
+                    name: name
+                }
+                ],
+                subject: 'Registration OTP Snap-It',
+                htmlContent: `<p>Your registration otp for Snap-It is ${otp}</p>`,
+                replyTo: {
+                    email: 'vsachdeva4859@gmail.com',
+                    name: 'Snap-It'
+                }
+            }
+        });
+
+        console.log('Email sent successfully:', response.data);
+        // console.log('Email sent successfully:');
+        res.status(StatusCodes.OK).json(otp);
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+}
+
 export const sendMail = async (req, res) => {
     try {
         const { name, email } = req.body;
