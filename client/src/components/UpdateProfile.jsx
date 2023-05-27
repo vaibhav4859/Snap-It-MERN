@@ -68,7 +68,7 @@ const UpdateProfile = (props) => {
     }
     onSubmitProps.resetForm();
     const savedUserResponse = await fetch(
-      `https://snap-it-backend.onrender.com/auth/update/${id}`,
+      `${process.env.REACT_APP_BACKEND_URL}/auth/update/${id}`,
       {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },

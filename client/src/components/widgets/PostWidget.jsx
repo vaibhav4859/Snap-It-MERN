@@ -69,7 +69,7 @@ const PostWidget = ({
 
   const patchLike = async () => {
     const response = await fetch(
-      `https://snap-it-backend.onrender.com/posts/${postId}/like`,
+      `${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/like`,
       {
         method: "PATCH",
         headers: {
@@ -86,7 +86,7 @@ const PostWidget = ({
   const submitHandler = async (e) => {
     e.preventDefault();
     const response = await fetch(
-      `https://snap-it-backend.onrender.com/posts/${postId}/comment`,
+      `${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/comment`,
       {
         method: "PATCH",
         headers: {
@@ -110,7 +110,7 @@ const PostWidget = ({
   const deleteComment = async (index) => {
     // console.log("hi", index);
     const response = await fetch(
-      `https://snap-it-backend.onrender.com/posts/${postId}/comment`,
+      `${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/comment`,
       {
         method: "DELETE",
         headers: {
@@ -147,7 +147,7 @@ const PostWidget = ({
           height="auto"
           alt="post"
           style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-          src={`https://snap-it-backend.onrender.com/assets/${picturePath}`}
+          src={`${process.env.REACT_APP_BACKEND_URL}/assets/${picturePath}`}
         />
       )}
       <FlexBetween mt="0.25rem">

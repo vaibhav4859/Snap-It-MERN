@@ -21,7 +21,7 @@ const PostsWidget = ({
     if (isProfile) {
       const getUserPosts = async () => {
         const response = await fetch(
-          `https://snap-it-backend.onrender.com/posts/${userId}/posts`,
+          `${process.env.REACT_APP_BACKEND_URL}/posts/${userId}/posts`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -34,7 +34,7 @@ const PostsWidget = ({
     } else {
       const getPosts = async () => {
         const response = await fetch(
-          "https://snap-it-backend.onrender.com/posts",
+          `${process.env.REACT_APP_BACKEND_URL}/posts`,
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },

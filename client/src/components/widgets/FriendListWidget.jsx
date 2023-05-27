@@ -13,7 +13,7 @@ const FriendListWidget = ({ userId, reRender, setReRender }) => {
 
   const getFriends = async () => {
     const response = await fetch(
-      `https://snap-it-backend.onrender.com/users/${userId}/friends`,
+      `${process.env.REACT_APP_BACKEND_URL}/users/${userId}/friends`,
       {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },

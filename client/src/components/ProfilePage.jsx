@@ -18,7 +18,7 @@ const ProfilePage = (props) => {
 
   const getUser = async () => {
     const response = await fetch(
-      `https://snap-it-backend.onrender.com/users/${userID}`,
+      `${process.env.REACT_APP_BACKEND_URL}/users/${userID}`,
       {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },

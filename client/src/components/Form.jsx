@@ -93,7 +93,7 @@ const Form = () => {
     }
     formData.append("picturePath", values.picture.name);
     const savedUserResponse = await fetch(
-      "https://snap-it-backend.onrender.com/auth/register",
+      `${process.env.REACT_APP_BACKEND_URL}/auth/register`,
       {
         method: "POST",
         body: formData,
@@ -118,7 +118,7 @@ const Form = () => {
     values.email = values.email.toLowerCase();
     onSubmitProps.resetForm();
     const loggedInResponse = await fetch(
-      "https://snap-it-backend.onrender.com/auth/login",
+      `${process.env.REACT_APP_BACKEND_URL}/auth/login`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -148,7 +148,7 @@ const Form = () => {
     setClicked(true);
     setOtpClick(true);
     // console.log(otpRef.current.values.email);
-    const response = await fetch(`https://snap-it-backend.onrender.com/auth/register/otp`, {
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/register/otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

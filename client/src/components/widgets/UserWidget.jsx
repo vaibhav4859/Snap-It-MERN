@@ -69,7 +69,7 @@ const UserWidget = (props) => {
     setTwitterValue("");
 
     const response = await fetch(
-      `https://snap-it-backend.onrender.com/users/${props.user._id}/update/socialprofile`,
+      `${process.env.REACT_APP_BACKEND_URL}/users/${props.user._id}/update/socialprofile`,
       {
         method: "PATCH",
         headers: {

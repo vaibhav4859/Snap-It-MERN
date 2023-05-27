@@ -46,7 +46,7 @@ const Friend = ({
 
   const patchFriend = async () => {
     const response = await fetch(
-      `https://snap-it-backend.onrender.com/users/${_id}/${friendId}`,
+      `${process.env.REACT_APP_BACKEND_URL}/users/${_id}/${friendId}`,
       {
         method: "PATCH",
         headers: {
@@ -64,7 +64,7 @@ const Friend = ({
 
   const deletePost = async () => {
     const response = await fetch(
-      `https://snap-it-backend.onrender.com/posts/${postId}/delete`,
+      `${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/delete`,
       {
         method: "DELETE",
         headers: {
@@ -80,7 +80,7 @@ const Friend = ({
   };
 
   const hideHandler = async (hide) => {
-    const response = await fetch(`https://snap-it-backend.onrender.com/posts/${postId}/hide`, {
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/hide`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,

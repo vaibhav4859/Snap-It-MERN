@@ -9,7 +9,7 @@ const UserImage = ({ image, size = "60px" }) => {
         width={size}
         height={size}
         alt="user"
-        src={`https://snap-it-backend.onrender.com/assets/${image}`}
+        src={`${process.env.REACT_APP_BACKEND_URL}/assets/${image}`}
       />
     </Box>
   );

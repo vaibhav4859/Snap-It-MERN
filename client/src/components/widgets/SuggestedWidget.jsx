@@ -13,7 +13,7 @@ const SuggestedWidget = ({ userId, reRender, setReRender }) => {
   useEffect(() => {
     const getFriends = async () => {
       const response = await fetch(
-        `http://localhost:5000/users/suggested/${userId}`,
+        `${process.env.REACT_APP_BACKEND_URL}/users/suggested/${userId}`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },

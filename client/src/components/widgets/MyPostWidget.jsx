@@ -62,7 +62,7 @@ const MyPostWidget = ({ picturePath }) => {
     
     setImage(null);
     setPost("");
-    const response = await fetch(`https://snap-it-backend.onrender.com/posts`, {
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/posts`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: formData,

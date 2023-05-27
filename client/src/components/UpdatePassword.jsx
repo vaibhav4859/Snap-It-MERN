@@ -62,7 +62,7 @@ const UpdatePassword = (props) => {
     setClicked(true);
     onSubmitProps.resetForm();
     const savedUserResponse = await fetch(
-      `http://localhost:5000/users/${id}/update/password`,
+      `${process.env.REACT_APP_BACKEND_URL}/users/${id}/update/password`,
       {
         method: "PATCH",
         headers: {
@@ -91,7 +91,7 @@ const UpdatePassword = (props) => {
   const sendOtp = async (values, onSubmitProps) => {
     setClicked(true);
     const otpResponse = await fetch(
-      `http://localhost:5000/users/${id}/update/password/sendotp`,
+      `${process.env.REACT_APP_BACKEND_URL}/users/${id}/update/password/sendotp`,
       {
         method: "POST",
         headers: {
@@ -121,7 +121,7 @@ const UpdatePassword = (props) => {
     setClicked(true);
     setOtpVerify(true);
     const otpResponse = await fetch(
-      `http://localhost:5000/users/${id}/update/password/verifyotp`,
+      `${process.env.REACT_APP_BACKEND_URL}/users/${id}/update/password/verifyotp`,
       {
         method: "POST",
         headers: {
