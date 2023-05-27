@@ -62,7 +62,7 @@ const UpdatePassword = (props) => {
     setClicked(true);
     onSubmitProps.resetForm();
     const savedUserResponse = await fetch(
-      `https://snap-it-backend.onrender.com/users/${id}/update/password`,
+      `http://localhost:5000/users/${id}/update/password`,
       {
         method: "PATCH",
         headers: {
@@ -91,7 +91,7 @@ const UpdatePassword = (props) => {
   const sendOtp = async (values, onSubmitProps) => {
     setClicked(true);
     const otpResponse = await fetch(
-      `https://snap-it-backend.onrender.com/users/${id}/update/password/sendotp`,
+      `http://localhost:5000/users/${id}/update/password/sendotp`,
       {
         method: "POST",
         headers: {
@@ -121,7 +121,7 @@ const UpdatePassword = (props) => {
     setClicked(true);
     setOtpVerify(true);
     const otpResponse = await fetch(
-      `https://snap-it-backend.onrender.com/users/${id}/update/password/verifyotp`,
+      `http://localhost:5000/users/${id}/update/password/verifyotp`,
       {
         method: "POST",
         headers: {

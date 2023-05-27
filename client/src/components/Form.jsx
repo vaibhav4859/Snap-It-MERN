@@ -114,6 +114,7 @@ const Form = () => {
   };
 
   const login = async (values, onSubmitProps) => {
+    console.log(("login"));
     values.email = values.email.toLowerCase();
     onSubmitProps.resetForm();
     const loggedInResponse = await fetch(
@@ -143,6 +144,7 @@ const Form = () => {
   };
 
   const sendOtp = async (values, onSubmitProps) => {
+    console.log("otp");
     setClicked(true);
     setOtpClick(true);
     // console.log(otpRef.current.values.email);
@@ -406,7 +408,7 @@ const Form = () => {
                   otpClick &&
                   (!values.otp || values.otp.length !== 4))
               }
-              onClick={!otpClick ? sendOtp : null}
+              onClick={!otpClick && pageType !== "login" ? sendOtp : null}
             >
               {!clicked
                 ? isLogin

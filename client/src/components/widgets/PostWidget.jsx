@@ -41,6 +41,8 @@ const PostWidget = ({
   comments,
   showLikes,
   showComments,
+  reRender,
+  setReRender,
 }) => {
   const [isComments, setIsComments] = useState(false);
   const [comment, setComment] = useState("");
@@ -133,6 +135,8 @@ const PostWidget = ({
         user={user}
         showComments={showComments}
         showLikes={showLikes}
+        reRender={reRender}
+        setReRender={setReRender}
       />
       <Typography color={main} sx={{ mt: "1rem" }}>
         {description}

@@ -4,14 +4,17 @@ import UserWidget from "./widgets/UserWidget";
 import MyPostWidget from "./widgets/MyPostWidget";
 import PostsWidget from "./widgets/PostsWidget";
 import AdvertWidget from "./widgets/AdvertWidget";
-import FriendListWidget from "./widgets/FriendListWidget";
+// import FriendListWidget from "./widgets/FriendListWidget";
+import SuggestedWidget from "./widgets/SuggestedWidget";
+import { useState } from "react";
 
 const HomePage = (props) => {
+  const [reRender, setReRender] = useState(false);
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
 
   return (
     <Box>
-      <Navbar user={props.user}/>
+      <Navbar user={props.user} />
       <Box
         width="100%"
         padding="2rem 6%"
@@ -22,18 +25,38 @@ const HomePage = (props) => {
         <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
           <UserWidget user={props.user} />
         </Box>
+        {!isNonMobileScreens && (
+          <Box flexBasis="26%">
+            {/* <Box m="2rem 0" /> */}
+            <SuggestedWidget
+              userId={props.user._id}
+              reRender={reRender}
+              setReRender={setReRender}
+            />
+          </Box>
+        )}
         <Box
           flexBasis={isNonMobileScreens ? "42%" : undefined}
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
           <MyPostWidget picturePath={props.user.picturePath} />
-          <PostsWidget userId={props.user._id} user={props.user}/>
+          <PostsWidget
+            userId={props.user._id}
+            user={props.user}
+            reRender={reRender}
+            setReRender={setReRender}
+          />
         </Box>
         {isNonMobileScreens && (
           <Box flexBasis="26%">
             <AdvertWidget />
             <Box m="2rem 0" />
-            <FriendListWidget userId={props.user._id} />
+            {/* <FriendListWidget userId={props.user._id} reRender={reRender} setReRender={setReRender} /> */}
+            <SuggestedWidget
+              userId={props.user._id}
+              reRender={reRender}
+              setReRender={setReRender}
+            />
           </Box>
         )}
       </Box>

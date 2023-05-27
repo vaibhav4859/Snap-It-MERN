@@ -1,41 +1,39 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import Friend from "../UI/Friend";
 import WidgetWrapper from "../UI/WidgetWrapper";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setFriends } from "../../store/index";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
-const FriendListWidget = ({ userId, reRender, setReRender }) => {
-  const dispatch = useDispatch();
+const SuggestedWidget = ({ userId, reRender, setReRender }) => {
   const { palette } = useTheme();
   const token = useSelector((state) => state.token);
-  const friends = useSelector((state) => state.user.friends);
-
-  const getFriends = async () => {
-    const response = await fetch(
-      `https://snap-it-backend.onrender.com/users/${userId}/friends`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const data = await response.json();
-    dispatch(setFriends({ friends: data }));
-  };
+  const [friends, setFriends] = useState([]);
+  console.log(reRender);
 
   useEffect(() => {
+    const getFriends = async () => {
+      const response = await fetch(
+        `http://localhost:5000/users/suggested/${userId}`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = await response.json();
+      setFriends(data);
+    };
     getFriends();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token, userId, reRender]);
 
   return (
-    <WidgetWrapper maxHeight="14rem" friend={true}>
+    <WidgetWrapper maxHeight="14rem" friend={true} marginTop="2rem">
       <Typography
         color={palette.neutral.dark}
         variant="h5"
         fontWeight="500"
         sx={{ mb: "1.5rem" }}
       >
-        Friend List
+        Suggested For You
       </Typography>
       <Box display="flex" flexDirection="column" gap="1.5rem">
         {friends.map((friend, index) => (
@@ -45,8 +43,8 @@ const FriendListWidget = ({ userId, reRender, setReRender }) => {
             name={`${friend.firstName} ${friend.lastName}`}
             subtitle={friend.occupation}
             userPicturePath={friend.picturePath}
-            reRender={reRender}
             setReRender={setReRender}
+            reRender={reRender}
           />
         ))}
       </Box>
@@ -54,4 +52,4 @@ const FriendListWidget = ({ userId, reRender, setReRender }) => {
   );
 };
 
-export default FriendListWidget;
+export default SuggestedWidget;

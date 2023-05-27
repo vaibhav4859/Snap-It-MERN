@@ -3,41 +3,49 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "../../store/index";
 import PostWidget from "./PostWidget";
 
-const PostsWidget = ({ userId, user, isProfile = false, name }) => {
+const PostsWidget = ({
+  userId,
+  user,
+  isProfile = false,
+  name,
+  reRender,
+  setReRender,
+}) => {
   const dispatch = useDispatch();
   const posts = useSelector((state) => state.posts);
   const token = useSelector((state) => state.token);
-  if(user) name = `${user.firstName} ${user.lastName}`;
+  if (user) name = `${user.firstName} ${user.lastName}`;
   // console.log(name);
-
-  const getPosts = async () => {
-    const response = await fetch("https://snap-it-backend.onrender.com/posts", {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
-    dispatch(setPosts({ posts: data }));
-  };
-
-  const getUserPosts = async () => {
-    const response = await fetch(
-      `https://snap-it-backend.onrender.com/posts/${userId}/posts`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const data = await response.json();
-    dispatch(setPosts({ posts: data }));
-  };
 
   useEffect(() => {
     if (isProfile) {
+      const getUserPosts = async () => {
+        const response = await fetch(
+          `https://snap-it-backend.onrender.com/posts/${userId}/posts`,
+          {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const data = await response.json();
+        dispatch(setPosts({ posts: data }));
+      };
       getUserPosts();
     } else {
+      const getPosts = async () => {
+        const response = await fetch(
+          "https://snap-it-backend.onrender.com/posts",
+          {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const data = await response.json();
+        dispatch(setPosts({ posts: data }));
+      };
       getPosts();
     }
-  }, []);
+  }, [dispatch, token, userId, isProfile, reRender]);
 
   return (
     <>
@@ -71,6 +79,8 @@ const PostsWidget = ({ userId, user, isProfile = false, name }) => {
               comments={comments}
               showLikes={showLikes}
               showComments={showComments}
+              reRender={reRender}
+              setReRender={setReRender}
             />
           )
         )

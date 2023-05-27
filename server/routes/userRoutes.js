@@ -1,6 +1,6 @@
 import express from "express";
 import { sendMail, updatePassword, verifyOtp } from "../controllers/auth.js";
-import { getUser, getUserFriends, addRemoveFriend, updateSocialProfile } from "../controllers/users.js";
+import { getUser, getUserFriends, addRemoveFriend, updateSocialProfile, getSuggestedUsers } from "../controllers/users.js";
 import { authenticationMiddleware } from "../middleware/auth.js";
 
 const router = express.Router();
@@ -12,5 +12,6 @@ router.patch("/:id/update/password", authenticationMiddleware, updatePassword);
 router.patch("/:id/update/socialprofile", authenticationMiddleware, updateSocialProfile);
 router.get("/:id/friends", authenticationMiddleware, getUserFriends);
 router.patch("/:id/:friendId", authenticationMiddleware, addRemoveFriend);
+router.get("/suggested/:id", authenticationMiddleware, getSuggestedUsers);
 
 export default router;

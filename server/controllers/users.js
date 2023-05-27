@@ -32,6 +32,29 @@ export const getUserFriends = async (req, res) => {
     }
 };
 
+export const getSuggestedUsers = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findById(id);
+        let allUsers = await User.find({});
+
+        const suggestedUsers = allUsers.filter(item => {
+            return user.friends.includes(item._id.toString()) === false && item._id != id;
+        })
+        // console.log(suggestedUsers.length);
+
+        const formattedSuggested = suggestedUsers.map(
+            ({ _id, firstName, lastName, occupation, location, picturePath }) => {
+                return { _id, firstName, lastName, occupation, location, picturePath };
+            }
+        );
+
+        res.status(StatusCodes.OK).json(formattedSuggested);
+    } catch (err) {
+        res.status(StatusCodes.NOT_FOUND).json({ message: err.message });
+    }
+}
+
 export const addRemoveFriend = async (req, res) => {
     try {
         const { id, friendId } = req.params;

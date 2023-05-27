@@ -156,19 +156,20 @@ export const sendRegistrationMail = async (req, res) => {
 
 export const sendMail = async (req, res) => {
     try {
+        console.log("sendotp");
         const { name, email } = req.body;
-        // console.log(name, email);
+        console.log(name, email);
         const otp = Math.floor(Math.random() * 10000);
         if (otp < 1000 || otp > 9999) otp = 6969;
 
         let user = await User.findOne({ email: email });
+        console.log(user);
         user.otp = otp;
-        // console.log(user);
 
         const updatedUser = await User.findOneAndUpdate({ email: email }, {
             ...user,
         }, { new: true, runValidators: true });
-        // console.log(updatedUser);
+        console.log(updatedUser);
 
         const response = await axios({
             method: 'post',
@@ -199,12 +200,14 @@ export const sendMail = async (req, res) => {
         // console.log('Email sent successfully:');
         res.status(StatusCodes.OK).json(updatedUser);
     } catch (error) {
+        console.log(error);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: `Error sending email: ${error}` });
     }
 }
 
 export const verifyOtp = async (req, res) => {
     try {
+        console.log("verifyotp");
         const { enteredOtp, email } = req.body;
         const user = await User.find({ email: email });
         

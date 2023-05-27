@@ -23,6 +23,8 @@ const Friend = ({
   postId,
   showLikes,
   showComments,
+  setReRender,
+  reRender
 }) => {
   const [list, setList] = useState(null);
   const open = Boolean(list);
@@ -55,6 +57,9 @@ const Friend = ({
     );
     const data = await response.json();
     dispatch(setFriends({ friends: data }));
+    if(reRender) setReRender(false);
+    else setReRender(true);
+    // setReRender(prev => !prev);
   };
 
   const deletePost = async () => {
