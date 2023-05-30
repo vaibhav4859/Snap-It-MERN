@@ -11,6 +11,32 @@ import { useState } from "react";
 const HomePage = (props) => {
   const [reRender, setReRender] = useState(false);
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
+  const [state, setState] = useState(false);
+
+  function isPageBottom() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+    const documentHeight = Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.offsetHeight,
+      document.body.clientHeight,
+      document.documentElement.clientHeight
+    );
+    
+    return scrollTop + windowHeight >= documentHeight - 30;
+  }
+  
+  // Example usage
+  window.addEventListener("scroll", function() {
+    if (isPageBottom()) {
+      // Reached the bottom of the page
+      setState(prev => !prev);
+      console.log("Reached the bottom of the page");
+    }
+  });
+  
 
   return (
     <Box>
@@ -23,7 +49,7 @@ const HomePage = (props) => {
         justifyContent="space-between"
       >
         <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
-          <UserWidget user={props.user} />
+          <UserWidget user={props.user} home={true}/>
         </Box>
         {!isNonMobileScreens && (
           <Box flexBasis="26%">
@@ -45,6 +71,8 @@ const HomePage = (props) => {
             user={props.user}
             reRender={reRender}
             setReRender={setReRender}
+            home={true}
+            state={state}
           />
         </Box>
         {isNonMobileScreens && (

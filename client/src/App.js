@@ -28,13 +28,14 @@ import UpdatePassword from "components/UpdatePassword";
 // update profile/password ka button in user widget - done
 // show/ hide likes and comments - done
 // twitter aur linkedin ka url - done
-// suggested for you 
-// close input field for social profiles bug
+// suggested for you - done
+// close input field for social profiles bug - resolved 
 // friend request accept tabhi ho jab accept kri via notification in navbar
-// otp while registering
-// infinite scrolling implement kro
+// otp while registering - done
+// infinite scrolling implement kro - done
 // chatting
-
+// lock if folow ni krta aur button
+// delete account
 function App() {
   const mode = useSelector((state) => state.mode);
   const user = useSelector((state) => state.user);

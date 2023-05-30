@@ -8,7 +8,7 @@ const SuggestedWidget = ({ userId, reRender, setReRender }) => {
   const { palette } = useTheme();
   const token = useSelector((state) => state.token);
   const [friends, setFriends] = useState([]);
-  console.log(reRender);
+  // console.log(reRender);
 
   useEffect(() => {
     const getFriends = async () => {

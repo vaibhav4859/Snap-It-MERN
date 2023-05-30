@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setFriends } from "../../store/index";
 
-const FriendListWidget = ({ userId, reRender, setReRender }) => {
+const FriendListWidget = ({ userId, reRender, setReRender, profile }) => {
   const dispatch = useDispatch();
   const { palette } = useTheme();
   const token = useSelector((state) => state.token);
@@ -47,6 +47,7 @@ const FriendListWidget = ({ userId, reRender, setReRender }) => {
             userPicturePath={friend.picturePath}
             reRender={reRender}
             setReRender={setReRender}
+            profile={profile}
           />
         ))}
       </Box>

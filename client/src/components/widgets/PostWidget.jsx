@@ -137,6 +137,7 @@ const PostWidget = ({
         showLikes={showLikes}
         reRender={reRender}
         setReRender={setReRender}
+        post={true}
       />
       <Typography color={main} sx={{ mt: "1rem" }}>
         {description}

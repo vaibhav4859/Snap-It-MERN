@@ -21,10 +21,12 @@ const Friend = ({
   subtitle,
   userPicturePath,
   postId,
+  post,
   showLikes,
   showComments,
   setReRender,
-  reRender
+  reRender,
+  profile
 }) => {
   const [list, setList] = useState(null);
   const open = Boolean(list);
@@ -43,6 +45,8 @@ const Friend = ({
   const handleClick = (e) => setList(e.currentTarget);
 
   const isFriend = friends.find((friend) => friend._id === friendId);
+  // const isFriend = user?._id.includes(friendId);
+  // console.log(friends, friendId);
 
   const patchFriend = async () => {
     const response = await fetch(
@@ -57,9 +61,9 @@ const Friend = ({
     );
     const data = await response.json();
     dispatch(setFriends({ friends: data }));
-    if(reRender) setReRender(false);
-    else setReRender(true);
-    // setReRender(prev => !prev);
+    // if(reRender) setReRender(false);
+    // else setReRender(true);
+    setReRender(prev => !prev);
   };
 
   const deletePost = async () => {
@@ -125,14 +129,14 @@ const Friend = ({
           onClick={() => patchFriend()}
           sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
         >
-          {isFriend ? (
+          {isFriend || post ? (
             <PersonRemoveOutlined sx={{ color: primaryDark }} />
           ) : (
             <PersonAddOutlined sx={{ color: primaryDark }} />
           )}
         </IconButton>
       ) : (
-        <>
+        !profile && <>
           <IconButton onClick={handleClick}>
             <MoreHorizIcon />
           </IconButton>

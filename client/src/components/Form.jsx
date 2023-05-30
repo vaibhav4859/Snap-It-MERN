@@ -80,7 +80,8 @@ const Form = () => {
       setError("Invalid Otp!");
       setOtpClick(false);
       setOtpVerify(false);
-      resetForm();
+      // resetForm();
+      values.otp = "";
       setClicked(false);
       return;
     }

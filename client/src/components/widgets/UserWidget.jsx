@@ -15,13 +15,12 @@ import {
 import UserImage from "../UI/UserImage";
 import FlexBetween from "../UI/FlexBetween";
 import WidgetWrapper from "../UI/WidgetWrapper";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import LinkedInImg from "../../assets/linkedin.png";
 import TwitterImg from "../../assets/twitter.png";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogin } from "store";
-import { useRef } from "react";
 
 function isValidTwitterUrl(twitterUrl) {
   const regex = /^https?:\/\/(www\.)?twitter\.com\/[a-zA-Z0-9_]+\/?$/;
@@ -35,13 +34,13 @@ function isValidLinkedInUrl(linkedinUrl) {
 
 const UserWidget = (props) => {
   const [showLinkedin, setShowLinkedin] = useState(false);
-  const [linkedinValue, setLinkedinValue] = useState("");
+  const [linkedinValue, setLinkedinValue] = useState(props.user.linkedinUrl);
   const [showTwitter, setShowTwitter] = useState(false);
-  const [twitterValue, setTwitterValue] = useState("");
+  const [twitterValue, setTwitterValue] = useState(props.user.twitterUrl);
   const [clicked, setClicked] = useState(false);
   const [update, setUpdate] = useState(false);
-  const twitterInputRef = useRef(null);
   const token = useSelector((state) => state.token);
+  const myself = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -61,6 +60,8 @@ const UserWidget = (props) => {
     impressions,
     friends,
   } = props.user;
+
+  // console.log(props.userId, myself._id);
 
   const addProfiles = async (e) => {
     e.preventDefault();
@@ -182,9 +183,10 @@ const UserWidget = (props) => {
                       "Twitter"
                     ) : (
                       <a
-                        href={`//${props.user.twitterUrl}`}
+                        href={`//:${props.user.twitterUrl}`}
                         target="_blank"
                         style={{ textDecoration: "none", color: "#00D5FA" }}
+                        rel="noreferrer"
                       >
                         Twitter
                       </a>
@@ -193,10 +195,10 @@ const UserWidget = (props) => {
                   <Typography color={medium}>Social Network</Typography>
                 </Box>
               </FlexBetween>
-              <EditOutlined
+              {(props.userId === myself._id || props.home) && <EditOutlined
                 sx={{ color: main }}
                 onClick={() => setShowTwitter(true)}
-              />
+              />}
             </>
           )}
           {showTwitter && (
@@ -260,9 +262,10 @@ const UserWidget = (props) => {
                       "Linkedin"
                     ) : (
                       <a
-                        href={`//${props.user.linkedinUrl}`}
+                        href={`//:${props.user.linkedinUrl}`}
                         target="_blank"
                         style={{ textDecoration: "none", color: "#00D5FA" }}
+                        rel="noreferrer"
                       >
                         Linkedin
                       </a>
@@ -271,10 +274,10 @@ const UserWidget = (props) => {
                   <Typography color={medium}>Network Platform</Typography>
                 </Box>
               </FlexBetween>
-              <EditOutlined
+              {(props.userId === myself._id || props.home) && <EditOutlined
                 sx={{ color: main }}
                 onClick={() => setShowLinkedin(true)}
-              />
+              />}
             </>
           )}
           {showLinkedin && (
@@ -329,48 +332,49 @@ const UserWidget = (props) => {
           )}
         </FlexBetween>
 
+        {(props.userId === myself._id || props.home) && <div>
         <Divider />
-
-        <Button
-          fullWidth
-          type="button"
-          sx={{
-            m: "1rem 0",
-            p: "0.3rem",
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.background.alt,
-            "&:hover": {
-              color: theme.palette.primary.main,
-            },
-          }}
-          onClick={() => navigate(`/update/${props.user._id}`)}
-        >
-          UPDATE PROFILE
-        </Button>
-        <Typography
-          color={main}
-          fontWeight="500"
-          textAlign="center"
-          margin="-0.6rem 0"
-        >
-          OR
-        </Typography>
-        <Button
-          fullWidth
-          type="button"
-          sx={{
-            m: "1rem 0",
-            p: "0.3rem",
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.background.alt,
-            "&:hover": {
-              color: theme.palette.primary.main,
-            },
-          }}
-          onClick={() => navigate(`/update/${props.user._id}/password`)}
-        >
-          UPDATE PASSWORD
-        </Button>
+          <Button
+            fullWidth
+            type="button"
+            sx={{
+              m: "1rem 0",
+              p: "0.3rem",
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.background.alt,
+              "&:hover": {
+                color: theme.palette.primary.main,
+              },
+            }}
+            onClick={() => navigate(`/update/${props.user._id}`)}
+          >
+            UPDATE PROFILE
+          </Button>
+          <Typography
+            color={main}
+            fontWeight="500"
+            textAlign="center"
+            margin="-0.6rem 0"
+          >
+            OR
+          </Typography>
+          <Button
+            fullWidth
+            type="button"
+            sx={{
+              m: "1rem 0",
+              p: "0.3rem",
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.background.alt,
+              "&:hover": {
+                color: theme.palette.primary.main,
+              },
+            }}
+            onClick={() => navigate(`/update/${props.user._id}/password`)}
+          >
+            UPDATE PASSWORD
+          </Button>
+        </div>}
       </Box>
     </WidgetWrapper>
   );

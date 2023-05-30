@@ -29,7 +29,15 @@ export const createPost = async (req, res) => {
 
 export const getFeedPosts = async (req, res) => {
     try {
-        const post = await Post.find().sort({ 'createdAt': -1 });
+        const { id } = req.params;
+        const user = await User.findById(id);
+        let post = await Post.find().sort({ 'createdAt': -1 });
+        // console.log(id, user, user.friends);
+
+        post = post.filter(item => {
+            return user.friends.includes(item.userId);
+        });
+        
         res.status(StatusCodes.OK).json(post);
     } catch (error) {
         res.status(StatusCodes.NOT_FOUND).json({ message: error.message });
@@ -134,13 +142,13 @@ export const deletePost = async (req, res) => {
 export const hideLikes = async (req, res) => {
     try {
         const { id } = req.params;
-        const {update} = req.body;
+        const { update } = req.body;
 
         const post = await Post.findById({ _id: id });
         if (!post) res.status(404).json({ msg: `No post with id : ${id}` });
 
-        if(update === "like") post.showLikes = !post.showLikes;
-        else if(update === "comment") post.showComments = !post.showComments;
+        if (update === "like") post.showLikes = !post.showLikes;
+        else if (update === "comment") post.showComments = !post.showComments;
 
         const updatedPost = await Post.findOneAndUpdate({ _id: id }, {
             ...post,
