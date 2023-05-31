@@ -7,12 +7,14 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import helmet from "helmet";
 import multer from "multer";
+import { Server } from "socket.io";
 import { fileURLToPath } from "url";
 import { register, login, update, sendRegistrationMail } from './controllers/auth.js';
 import { createPost } from './controllers/posts.js';
 import { authenticationMiddleware } from "./middleware/auth.js";
 import userRoutes from './routes/userRoutes.js';
 import postRoutes from './routes/postRoutes.js';
+import messageRoutes from "./routes/MessageRoutes.js";
 
 // Configurations
 const app = express();
@@ -57,6 +59,7 @@ app.post('/auth/register/otp', sendRegistrationMail);
 
 app.use('/users', userRoutes);
 app.use('/posts', postRoutes);
+app.use('/message', messageRoutes);
 
 // Mongoose Setup
 const port = process.env.PORT || 5000;
@@ -68,9 +71,29 @@ const start = async () => {
             useUnifiedTopology: true,
         }).then(() => console.log('Connected'));
 
-        app.listen(port, () => {
+        const server = app.listen(port, () => {
             console.log(`Server is listening on port ${port}`);
         });
+        const io = new Server(server, {
+            cors: {
+                origin: 'http://localhost:3000',
+                credentials: true,
+            }
+        });
+        global.onlineUsers = new Map();;
+        io.on("connection", (socket) => {
+            global.chatsocket = socket;
+            socket.on("addUser", (id) => {
+              onlineUsers.set(id, socket.id);
+            })
+      
+            socket.on("send-msg", (data) => {
+              const sendUserSocket = onlineUsers.get(data.to);
+              if (sendUserSocket) {
+                socket.to(sendUserSocket).emit("msg-recieve", data.message);
+              }
+            })
+          })
     } catch (error) {
         console.log(error);
     }

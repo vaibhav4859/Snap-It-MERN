@@ -9,6 +9,7 @@ import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "./theme";
 import UpdateProfile from "components/UpdateProfile";
 import UpdatePassword from "components/UpdatePassword";
+import Chat from 'components/Chat';
 
 // auro ki profile visit kro toh mypost widget na dikhe khudki pr dikhe - done
 // 3 friends ke baad scrollbar aa jayega - done
@@ -33,15 +34,22 @@ import UpdatePassword from "components/UpdatePassword";
 // friend request accept tabhi ho jab accept kri via notification in navbar
 // otp while registering - done
 // infinite scrolling implement kro - done
-// chatting
+// chatting - done
+// add images in chatting using firebase
 // lock if folow ni krta aur button
 // delete account
+
 function App() {
   const mode = useSelector((state) => state.mode);
   const user = useSelector((state) => state.user);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const isAuth = Boolean(useSelector((state) => state.token));
   // console.log(user);
+
+  // document.addEventListener('contextmenu', function (event) {
+  //   event.preventDefault();
+  // });
+
 
   return (
     <div className="app">
@@ -54,6 +62,7 @@ function App() {
             <Route path="/profile/:userID" element={isAuth ? <ProfilePage user={user} id={user._id} /> : <Navigate to="/" />} />
             <Route path="/update/:id" element={isAuth ? <UpdateProfile user={user} /> : <Navigate to="/" />} />
             <Route path="/update/:id/password" element={isAuth ? <UpdatePassword user={user} /> : <Navigate to="/" />} />
+            <Route path="/chat" element={isAuth ? <Chat user={user} /> : <Navigate to="/" />} />
           </Routes>
         </ThemeProvider>
       </BrowserRouter>
