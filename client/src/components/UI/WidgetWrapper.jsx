@@ -5,7 +5,7 @@ const WidgetWrapper = styled(Box)(({ theme, friend }) => ({
   padding: "1.5rem 1.5rem 0.75rem 1.5rem",
   backgroundColor: theme.palette.background.alt,
   borderRadius: "0.75rem",
-  overflowY: friend ? "scroll" : null,
+  overflowY: friend === "true" ? "scroll" : null,
 }));
 
 export default WidgetWrapper;

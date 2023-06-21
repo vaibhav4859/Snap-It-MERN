@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "../../store/index";
 import PostWidget from "./PostWidget";
-// import CircularProgress from "@mui/material/CircularProgress";
-// import { Box } from "@mui/material";
 
 const PostsWidget = ({
   userId,
@@ -14,17 +12,15 @@ const PostsWidget = ({
   setReRender,
   home,
   state,
+  setFlags
 }) => {
   const dispatch = useDispatch();
   const posts = useSelector((state) => state.posts);
   const [postsData, setPostsData] = useState([]);
   const [flag, setFlag] = useState(false);
   const token = useSelector((state) => state.token);
-  if (user) name = `${user.firstName} ${user.lastName}`;
-  console.log(postsData, posts, state);
 
   useEffect(() => {
-    console.log("before", postsData);
     const getMorePosts = async () => {
       let arr = [...postsData];
       for (
@@ -35,11 +31,9 @@ const PostsWidget = ({
         arr.push(posts[i]);
       }
       setPostsData(arr);
-      // setFlag((prev) => !prev);
     };
-    getMorePosts();
-    console.log("effect", postsData);
-  }, [state, reRender, flag]);
+    getMorePosts(); // eslint-disable-next-line
+  }, [state, reRender, flag]); 
 
   useEffect(() => {
     if (isProfile) {
@@ -62,9 +56,7 @@ const PostsWidget = ({
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();
-        // console.log(data);
         dispatch(setPosts({ posts: data }));
-        // window.location.reload();
         setPostsData([]);
         setFlag((prev) => !prev);
       };
@@ -79,17 +71,6 @@ const PostsWidget = ({
           Follow other user's to see their posts!!
         </h1>
       )}
-      {/* <InfiniteScroll
-        dataLength={postsData.length}
-        next={getMorePosts}
-        loader={
-          <Box sx={{ display: "flex" }}>
-            <CircularProgress />
-          </Box>
-        }
-        hasMore={postsData.length < posts.length}
-        height={650}
-      > */}
       {posts.length
         ? postsData &&
           postsData.map(
@@ -123,6 +104,7 @@ const PostsWidget = ({
                 showComments={showComments}
                 reRender={reRender}
                 setReRender={setReRender}
+                setFlags={setFlags}
               />
             )
           )

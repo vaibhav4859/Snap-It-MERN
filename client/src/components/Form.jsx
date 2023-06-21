@@ -115,7 +115,7 @@ const Form = () => {
   };
 
   const login = async (values, onSubmitProps) => {
-    console.log(("login"));
+    // console.log(("login"));
     values.email = values.email.toLowerCase();
     onSubmitProps.resetForm();
     const loggedInResponse = await fetch(
@@ -145,20 +145,23 @@ const Form = () => {
   };
 
   const sendOtp = async (values, onSubmitProps) => {
-    console.log("otp");
+    // console.log("otp");
     setClicked(true);
     setOtpClick(true);
     // console.log(otpRef.current.values.email);
-    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/register/otp`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: otpRef.current.values.email,
-        name: `${otpRef.current.values.firstName} ${otpRef.current.values.lastName}`,
-      }),
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/auth/register/otp`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: otpRef.current.values.email,
+          name: `${otpRef.current.values.firstName} ${otpRef.current.values.lastName}`,
+        }),
+      }
+    );
     const otp = await response.json();
     if (otp.error) {
       setClicked(false);
@@ -171,7 +174,6 @@ const Form = () => {
     }
   };
 
-  
   const verifyOtp = async (values, onSubmitProps) => {
     // console.log(String(otpRef.current.values.otp), String(validOtp));
     if (String(otpRef.current.values.otp) === String(validOtp)) return true;
@@ -266,7 +268,6 @@ const Form = () => {
                     multiple={false}
                     onDrop={(acceptedFiles) => {
                       setFieldValue("picture", acceptedFiles[0]);
-                      // console.log(acceptedFiles);
                     }}
                   >
                     {({ getRootProps, getInputProps }) => (
@@ -376,13 +377,31 @@ const Form = () => {
             </Box>
           )}
 
+          {pageType === "login" && (
+            <Typography
+              onClick={() => navigate('/forgot/password')}
+              sx={{
+                textDecoration: "underline",
+                color: palette.primary.main,
+                mt:"1rem",
+                pl:"0.2rem",
+                "&:hover": {
+                  cursor: "pointer",
+                  color: palette.primary.light,
+                },
+              }}
+            >
+              Forgot Password?
+            </Typography>
+          )}
+
           {/* BUTTONS */}
           <Box>
             <Button
               fullWidth
               type={isLogin || otpClick ? "submit" : "button"}
               sx={{
-                m: "2rem 0",
+                m: pageType === "login" ? "1rem 0" : "2rem 0",
                 p: "1rem",
                 backgroundColor: !clicked ? palette.primary.main : "#808080",
                 color: !clicked ? palette.background.alt : "#101010",

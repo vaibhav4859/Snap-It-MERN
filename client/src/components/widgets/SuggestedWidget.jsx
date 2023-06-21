@@ -26,7 +26,7 @@ const SuggestedWidget = ({ userId, reRender, setReRender }) => {
   }, [token, userId, reRender]);
 
   return (
-    <WidgetWrapper maxHeight="14rem" friend={true} marginTop="2rem">
+    <WidgetWrapper maxHeight="14rem" friend="true" marginTop="2rem">
       <Typography
         color={palette.neutral.dark}
         variant="h5"

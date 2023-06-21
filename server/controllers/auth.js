@@ -158,7 +158,6 @@ export const sendMail = async (req, res) => {
     try {
         console.log("sendotp");
         const { name, email } = req.body;
-        console.log(name, email);
         const otp = Math.floor(Math.random() * 10000);
         if (otp < 1000 || otp > 9999) otp = 6969;
 

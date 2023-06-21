@@ -10,6 +10,7 @@ import { themeSettings } from "./theme";
 import UpdateProfile from "components/UpdateProfile";
 import UpdatePassword from "components/UpdatePassword";
 import Chat from 'components/Chat';
+import ForgotPassword from "components/ForgotPassword";
 
 // auro ki profile visit kro toh mypost widget na dikhe khudki pr dikhe - done
 // 3 friends ke baad scrollbar aa jayega - done
@@ -35,7 +36,7 @@ import Chat from 'components/Chat';
 // otp while registering - done
 // infinite scrolling implement kro - done
 // chatting - done
-// add images in chatting using firebase
+// add images in chatting using firebase - done
 // lock if folow ni krta aur button
 // delete account
 
@@ -61,6 +62,7 @@ function App() {
             <Route path="/home" element={isAuth ? <HomePage user={user} /> : <Navigate to="/" />} />
             <Route path="/profile/:userID" element={isAuth ? <ProfilePage user={user} id={user._id} /> : <Navigate to="/" />} />
             <Route path="/update/:id" element={isAuth ? <UpdateProfile user={user} /> : <Navigate to="/" />} />
+            <Route path="/forgot/password" element={<ForgotPassword />} />
             <Route path="/update/:id/password" element={isAuth ? <UpdatePassword user={user} /> : <Navigate to="/" />} />
             <Route path="/chat" element={isAuth ? <Chat user={user} /> : <Navigate to="/" />} />
           </Routes>

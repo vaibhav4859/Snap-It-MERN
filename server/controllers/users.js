@@ -5,11 +5,36 @@ export const getUser = async (req, res) => {
     try {
         const { id } = req.params;
         const user = await User.findById(id);
-        res.status(StatusCodes.OK).json(user);
+        const formattedUser = user.map(
+            ({ _id, firstName, lastName, occupation, location, picturePath }) => {
+                return { _id, firstName, lastName, occupation, location, picturePath };
+            }
+        );
+        res.status(StatusCodes.OK).json(formattedUser);
     } catch (error) {
         res.status(StatusCodes.NOT_FOUND).json({ message: error.message });
     }
 };
+
+export const getSingleUser = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const allUsers = await User.find({});
+
+        const singleUser = allUsers.filter(user => user.email === email);
+        let formattedUser = singleUser;
+        if (singleUser) {
+            formattedUser = singleUser.map(
+                ({ _id, firstName, lastName, occupation, location, picturePath }) => {
+                    return { _id, firstName, lastName, occupation, location, picturePath };
+                }
+            );
+        }
+        res.status(StatusCodes.OK).json(formattedUser);
+    } catch (error) {
+        res.status(StatusCodes.NOT_FOUND).json({ message: error.message });
+    }
+}
 
 export const getUserFriends = async (req, res) => {
     try {
@@ -60,6 +85,7 @@ export const addRemoveFriend = async (req, res) => {
         const { id, friendId } = req.params;
         const user = await User.findById(id);
         const friend = await User.findById(friendId);
+        console.log(id, user, friendId, friend);
 
         if (user.friends.includes(friendId)) {
             user.friends = user.friends.filter((id) => id !== friendId);
@@ -72,6 +98,8 @@ export const addRemoveFriend = async (req, res) => {
         await user.save();
         await friend.save();
 
+        console.log("after ", user, friend);
+
         const friends = await Promise.all(
             user.friends.map((id) => User.findById(id))
         );
@@ -82,8 +110,10 @@ export const addRemoveFriend = async (req, res) => {
             }
         );
 
+        console.log(formattedFriends);
         res.status(StatusCodes.OK).json(formattedFriends);
     } catch (err) {
+        console.log(err);
         res.status(StatusCodes.NOT_FOUND).json({ message: err.message });
     }
 };

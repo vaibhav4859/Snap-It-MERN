@@ -33,10 +33,11 @@ const UpdatePassword = (props) => {
   const [clicked, setClicked] = useState(false);
   const [otpClick, setOtpClick] = useState(false);
   const [otpVerify, setOtpVerify] = useState(false);
-  const [otpError, setOtpError] = useState(false);
+  const [otpError, setOtpError] = useState(false); // eslint-disable-next-line
+  const [reRender, setReRender] = useState(false);
   const otpRef = useRef(null);
   const token = useSelector((state) => state.token);
-  const { id } = useParams();
+  let { id } = useParams();
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -66,11 +67,10 @@ const UpdatePassword = (props) => {
       {
         method: "PATCH",
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: props.user.email,
+          email: otpRef.current.values.email,
           newPassword: otpRef.current.values.newPassword,
         }),
       }
@@ -84,23 +84,49 @@ const UpdatePassword = (props) => {
     if (newUser) {
       setClicked(false);
       dispatch(setLogin({ user: newUser, token: token }));
-      navigate("/home");
+      if (props.forgot) navigate("/");
+      else navigate("/home");
     }
   };
 
   const sendOtp = async (values, onSubmitProps) => {
+    let user;
+    if (props.forgot) {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/users/forgot/password`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: otpRef.current.values.email,
+          }),
+        }
+      );
+
+      user = await response.json();
+
+      if (user.length === 0) {
+        alert("User with this email id doesn't exist");
+        otpRef.current.values.email = "";
+        setReRender((prev) => !prev);
+        return;
+      }
+    }
     setClicked(true);
+    if (user) id = user[0]._id;
+    console.log(id);
     const otpResponse = await fetch(
       `${process.env.REACT_APP_BACKEND_URL}/users/${id}/update/password/sendotp`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: `${props.user.firstName} ${props.user.lastName}`,
-          email: props.user.email,
+          name: `${otpRef.current.values.firstName} ${otpRef.current.values.lastName}`,
+          email: otpRef.current.values.email,
         }),
       }
     );
@@ -125,16 +151,14 @@ const UpdatePassword = (props) => {
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           enteredOtp: otpRef.current.values.otp,
-          email: props.user.email,
+          email: otpRef.current.values.email,
         }),
       }
     );
-    // values.otp = "";
     const verified = await otpResponse.json();
     if (verified.error) {
       setClicked(false);
@@ -149,17 +173,19 @@ const UpdatePassword = (props) => {
 
   return (
     <Box>
-      <NavBar user={props.user} />
+      {!props.forgot && <NavBar user={props.user} />}
       <Box
-        width={isNonMobileScreens ? "50%" : "93%"}
-        p="2rem"
-        m="2rem auto"
+        width={props.forgot ? "100%" : isNonMobileScreens ? "50%" : "93%"}
+        p={props.forgot ? "" : "2rem"}
+        m={props.forgot ? "" : "2rem auto"}
         borderRadius="1.5rem"
         backgroundColor={theme.palette.background.alt}
       >
-        <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }}>
-          Welcome to Snap-It, update your password!
-        </Typography>
+        {!props.forgot && (
+          <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }}>
+            Welcome to Snap-It, update your password!
+          </Typography>
+        )}
         <Formik
           onSubmit={handleFormSubmit}
           initialValues={initialValues}

@@ -26,7 +26,8 @@ const Friend = ({
   showComments,
   setReRender,
   reRender,
-  profile
+  profile,
+  setFlags
 }) => {
   const [list, setList] = useState(null);
   const open = Boolean(list);
@@ -45,8 +46,6 @@ const Friend = ({
   const handleClick = (e) => setList(e.currentTarget);
 
   const isFriend = friends.find((friend) => friend._id === friendId);
-  // const isFriend = user?._id.includes(friendId);
-  // console.log(friends, friendId);
 
   const patchFriend = async () => {
     const response = await fetch(
@@ -61,9 +60,8 @@ const Friend = ({
     );
     const data = await response.json();
     dispatch(setFriends({ friends: data }));
-    // if(reRender) setReRender(false);
-    // else setReRender(true);
     setReRender(prev => !prev);
+    setFlags(prev => !prev);
   };
 
   const deletePost = async () => {
