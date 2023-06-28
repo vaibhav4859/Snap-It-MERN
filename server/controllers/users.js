@@ -5,12 +5,15 @@ export const getUser = async (req, res) => {
     try {
         const { id } = req.params;
         const user = await User.findById(id);
-        const formattedUser = user.map(
-            ({ _id, firstName, lastName, occupation, location, picturePath }) => {
-                return { _id, firstName, lastName, occupation, location, picturePath };
+
+        const arrayUser = [user];
+        const formattedUser = arrayUser.map(
+            ({ _id, firstName, lastName, occupation, location, picturePath, email, friends, linkedinUrl, twitterUrl, viewedProfile, impressions, otp }) => {
+                return { _id, firstName, lastName, occupation, location, picturePath, email, friends, linkedinUrl, twitterUrl, viewedProfile, impressions, otp };
             }
         );
-        res.status(StatusCodes.OK).json(formattedUser);
+        console.log(formattedUser[0]);
+        res.status(StatusCodes.OK).json(formattedUser[0]);
     } catch (error) {
         res.status(StatusCodes.NOT_FOUND).json({ message: error.message });
     }

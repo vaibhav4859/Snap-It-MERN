@@ -28,14 +28,14 @@ const FriendListWidget = ({
       }
     );
     const data = await response.json();
-    console.log(data, userId);
+    // console.log(data, userId);
     dispatch(setFriends({ friends: data }));
   };
 
   useEffect(() => {
     getFriends();
   }, [followClick, flags]);
-  console.log(followClick, friends);
+  // console.log(followClick, friends);
 
   return (
     <WidgetWrapper maxHeight="14rem" friend="true">

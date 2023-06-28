@@ -64,6 +64,8 @@ const PostsWidget = ({
     }
   }, [dispatch, token, userId, isProfile, reRender]);
 
+// console.log(posts, flag);
+
   return (
     <div className="main-container">
       {home && posts.length === 0 && (
@@ -109,7 +111,6 @@ const PostsWidget = ({
             )
           )
         : !home && <h1>{name} hasn't posted anything yet!</h1>}
-      {/* </InfiniteScroll> */}
     </div>
   );
 };

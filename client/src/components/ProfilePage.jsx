@@ -26,7 +26,7 @@ const ProfilePage = (props) => {
   useEffect(() => {
     const getUser = async () => {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/users/${userID}`,
+        `http://localhost:5000/users/${userID}`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
@@ -38,6 +38,7 @@ const ProfilePage = (props) => {
     getUser();
   }, [token, userID, reRender, followClick]);
 
+  console.log(user);
   if (!user) return null;
 
   const patchFriend = async () => {
@@ -95,7 +96,7 @@ const ProfilePage = (props) => {
             <MyPostWidget picturePath={user.picturePath} />
           )}
           <Box m="2rem 0" />
-          {user.friends.includes(props.user._id) ||
+          {user?.friends?.includes(props.user._id) ||
           userID === props.user._id ? (
             <PostsWidget
               userId={userID}
