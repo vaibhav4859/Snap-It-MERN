@@ -46,12 +46,13 @@ const PostsWidget = ({
           }
         );
         const data = await response.json();
+        // console.log(data);
         dispatch(setPosts({ posts: data }));
       };
       getUserPosts();
     } else {
       const getPosts = async () => {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/posts/${userId}`, {
+        const response = await fetch(`http://localhost:5000/posts/${userId}`, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -64,7 +65,7 @@ const PostsWidget = ({
     }
   }, [dispatch, token, userId, isProfile, reRender]);
 
-// console.log(posts, flag);
+// console.log(postsData);
 
   return (
     <div className="main-container">
@@ -75,7 +76,7 @@ const PostsWidget = ({
       )}
       {posts.length
         ? postsData &&
-          postsData.map(
+          posts.map(
             ({
               _id,
               userId,

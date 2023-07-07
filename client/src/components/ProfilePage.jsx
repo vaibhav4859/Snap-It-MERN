@@ -26,7 +26,7 @@ const ProfilePage = (props) => {
   useEffect(() => {
     const getUser = async () => {
       const response = await fetch(
-        `http://localhost:5000/users/${userID}`,
+        `${process.env.REACT_APP_BACKEND_URL}/users/${userID}`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
@@ -38,7 +38,7 @@ const ProfilePage = (props) => {
     getUser();
   }, [token, userID, reRender, followClick]);
 
-  console.log(user);
+  // console.log(user);
   if (!user) return null;
 
   const patchFriend = async () => {
@@ -61,6 +61,8 @@ const ProfilePage = (props) => {
   };
 
   if (followClick) patchFriend();
+
+  console.log(userID);
 
   return (
     <Box>

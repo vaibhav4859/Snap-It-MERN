@@ -31,12 +31,16 @@ export const getFeedPosts = async (req, res) => {
     try {
         const { id } = req.params;
         const user = await User.findById(id);
+        const myPosts = await Post.find({userId : id});
+        console.log(myPosts);
         let post = await Post.find().sort({ 'createdAt': -1 });
         // console.log(id, user, user.friends);
 
         post = post.filter(item => {
             return user.friends.includes(item.userId);
         });
+
+        post = [...post, ...myPosts];
         
         res.status(StatusCodes.OK).json(post);
     } catch (error) {
