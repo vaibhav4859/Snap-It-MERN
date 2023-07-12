@@ -76,7 +76,7 @@ const start = async () => {
         });
         const io = new Server(server, {
             cors: {
-                origin: ['http://localhost:3000', 'https://snap-it-vaibhav.web.app/'],
+                origin: ['https://snap-it-vaibhav.web.app/', 'http://localhost:3000'],
                 credentials: true,
             }
         });
