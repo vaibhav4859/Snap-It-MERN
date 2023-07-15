@@ -9,6 +9,7 @@ import {
   Collapse,
   Alert,
   IconButton,
+  InputAdornment,
 } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import CloseIcon from "@mui/icons-material/Close";
@@ -19,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "../store/index";
 import Dropzone from "react-dropzone";
 import FlexBetween from "./UI/FlexBetween";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("required").min(2).max(12),
@@ -58,6 +60,7 @@ const Form = () => {
   const [otpClick, setOtpClick] = useState(false);
   const [otpVerify, setOtpVerify] = useState(false);
   const [validOtp, setValidOtp] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const otpRef = useRef(null);
   const { palette } = useTheme();
   const dispatch = useDispatch();
@@ -305,7 +308,7 @@ const Form = () => {
             />
             <TextField
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               onBlur={handleBlur}
               onChange={handleChange}
               value={values.password}
@@ -313,6 +316,18 @@ const Form = () => {
               error={Boolean(touched.password) && Boolean(errors.password)}
               helperText={touched.password && errors.password}
               sx={{ gridColumn: "span 4" }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword(prev => !prev)}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             {!error && !isLogin && otpClick && (
               <TextField

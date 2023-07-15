@@ -37,8 +37,12 @@ import ForgotPassword from "components/ForgotPassword";
 // infinite scrolling implement kro - done
 // chatting - done
 // add images in chatting using firebase - done
-// lock if folow ni krta aur button
-// delete account
+// chat mei khaali mere friends dikhne chahiye so call backend instead - done
+// lock if folow ni krta aur button - done
+// delete account - done
+// follow button dhang se kaam ni kr rha at profile page
+// on the spot like and comment kaam ni kr rhe
+// modal on delete post
 
 function App() {
   const mode = useSelector((state) => state.mode);

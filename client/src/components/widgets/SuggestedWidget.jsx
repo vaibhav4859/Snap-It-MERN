@@ -36,7 +36,7 @@ const SuggestedWidget = ({ userId, reRender, setReRender }) => {
         Suggested For You
       </Typography>
       <Box display="flex" flexDirection="column" gap="1.5rem">
-        {friends.map((friend, index) => (
+        {friends && friends.map((friend, index) => (
           <Friend
             key={index}
             friendId={friend._id}

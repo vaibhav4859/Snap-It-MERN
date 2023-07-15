@@ -15,7 +15,8 @@ import FlexBetween from "./UI/FlexBetween";
 import NavBar from "./NavBar";
 import msgImage from "../assets/msg.png";
 import ChatWidget from "./widgets/ChatWidget";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const Grid = styled(MuiGrid)(({ theme }) => ({
   width: "100%",
@@ -30,9 +31,25 @@ const Chat = ({ user }) => {
   const mode = theme.palette.mode;
   const neutralLight = theme.palette.neutral.light;
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
+  const token = useSelector((state) => state.token);
   const [currentUser, setCurrentUser] = useState(null);
+  const [userFriends, setUserFriends] = useState([]);
 
   // console.log(user);
+  useEffect(() => {
+    const getUser = async () => {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/users/${user._id}/friends`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = await response.json();
+      setUserFriends(data);
+    };
+    getUser();
+  }, [token, user._id]);
 
   return (
     <Box>
@@ -81,7 +98,7 @@ const Chat = ({ user }) => {
                 paddingRight: "0.7rem",
               }}
             >
-              {user.friends.map((user, index) => {
+              {userFriends.map((user, index) => {
                 const name = `${user.firstName} ${user.lastName}`;
                 return (
                   <ListItem

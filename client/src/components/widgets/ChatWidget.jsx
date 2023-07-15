@@ -24,6 +24,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import app from "../../firebase";
+import { useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -44,6 +45,7 @@ const ChatWidget = ({ user }) => {
   const myself = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
   const theme = useTheme();
+  const navigate = useNavigate();
   const mode = theme.palette.mode;
   const mediumMain = theme.palette.neutral.mediumMain;
   // const medium = theme.palette.neutral.medium;
@@ -114,7 +116,7 @@ const ChatWidget = ({ user }) => {
     if (user) {
       socket.current = io(`${process.env.REACT_APP_BACKEND_URL}`);
       socket.current.emit("addUser", myself._id);
-    }
+    } // eslint-disable-next-line
   }, [myself._id]);
 
   const handleOpen = () => setOpen(true);
@@ -265,6 +267,7 @@ const ChatWidget = ({ user }) => {
             },
             cursor: "pointer",
           }}
+          onClick = {() => navigate(`/profile/${user._id}`)}
         >
           {name.length <= 20 ? name : `${name.substring(0, 20)}...`}
         </Typography>

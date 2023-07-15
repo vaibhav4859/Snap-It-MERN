@@ -21,6 +21,7 @@ import TwitterImg from "../../assets/twitter.png";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogin } from "store";
+import DeleteAccountWidget from "./DeleteAccountWidget";
 
 function isValidTwitterUrl(twitterUrl) {
   const regex = /^https?:\/\/(www\.)?twitter\.com\/[a-zA-Z0-9_]+\/?$/;
@@ -39,6 +40,7 @@ const UserWidget = (props) => {
   const [twitterValue, setTwitterValue] = useState(props.user.twitterUrl);
   const [clicked, setClicked] = useState(false);
   const [update, setUpdate] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const token = useSelector((state) => state.token);
   const myself = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -61,7 +63,7 @@ const UserWidget = (props) => {
     friends,
   } = props.user;
 
-  // console.log(props.userId, myself._id);
+  console.log(openModal);
 
   const addProfiles = async (e) => {
     e.preventDefault();
@@ -87,7 +89,7 @@ const UserWidget = (props) => {
     );
 
     const updatedUser = await response.json();
-    console.log(updatedUser);
+    // console.log(updatedUser);
 
     if (updatedUser.error) {
       setClicked(false);
@@ -374,7 +376,33 @@ const UserWidget = (props) => {
           >
             UPDATE PASSWORD
           </Button>
+          <Typography
+            color={main}
+            fontWeight="500"
+            textAlign="center"
+            margin="-0.6rem 0"
+          >
+            OR
+          </Typography>
+          <Button
+            fullWidth
+            type="button"
+            sx={{
+              m: "1rem 0",
+              p: "0.3rem",
+              backgroundColor: "#f43636",
+              color: theme.palette.background.alt,
+              "&:hover": {
+                color: "#f43636",
+                backgroundColor: "rgba(213, 0, 0, 0.08)"
+              },
+            }}
+            onClick={() => setOpenModal(prev => !prev)}
+          >
+            DELETE ACCOUNT
+          </Button>
         </div>}
+        {openModal && <DeleteAccountWidget setOpenModal={setOpenModal} user={myself} />}
       </Box>
     </WidgetWrapper>
   );

@@ -9,6 +9,7 @@ import {
   Collapse,
   Alert,
   IconButton,
+  InputAdornment,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Formik } from "formik";
@@ -17,6 +18,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import NavBar from "./NavBar";
 import { setLogin } from "store";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const validationSchema = yup.object().shape({
   email: yup.string().email("invalid email").required("required").max(50),
@@ -35,6 +37,8 @@ const UpdatePassword = (props) => {
   const [otpVerify, setOtpVerify] = useState(false);
   const [otpError, setOtpError] = useState(false); // eslint-disable-next-line
   const [reRender, setReRender] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const otpRef = useRef(null);
   const token = useSelector((state) => state.token);
   let { id } = useParams();
@@ -250,7 +254,7 @@ const UpdatePassword = (props) => {
                 {!otpError && otpVerify && otpClick && (
                   <TextField
                     label="Enter new Password"
-                    type="password"
+                    type={showPassword ? "text" : "password"} 
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={values.newPassword}
@@ -261,12 +265,24 @@ const UpdatePassword = (props) => {
                     }
                     helperText={touched.newPassword && errors.newPassword}
                     sx={{ gridColumn: "span 4" }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={() => setShowPassword(prev => !prev)}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
                   />
                 )}
                 {!otpError && otpVerify && otpClick && (
                   <TextField
                     label="Confirm new password"
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"} 
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={values.confirmPassword}
@@ -279,6 +295,18 @@ const UpdatePassword = (props) => {
                       touched.confirmPassword && errors.confirmPassword
                     }
                     sx={{ gridColumn: "span 4" }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={() => setShowConfirmPassword(prev => !prev)}
+                          >
+                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
                   />
                 )}
               </Box>

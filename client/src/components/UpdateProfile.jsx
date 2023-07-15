@@ -9,6 +9,7 @@ import {
   Collapse,
   Alert,
   IconButton,
+  InputAdornment,
 } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import CloseIcon from "@mui/icons-material/Close";
@@ -21,6 +22,7 @@ import FlexBetween from "./UI/FlexBetween";
 import NavBar from "./NavBar";
 import { setLogin } from "store";
 import { setPosts } from "store";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const validationSchema = yup.object().shape({
   firstName: yup.string().required("required").min(2).max(12),
@@ -35,6 +37,7 @@ const validationSchema = yup.object().shape({
 const UpdateProfile = (props) => {
   const [clicked, setClicked] = useState(false);
   const [error, setError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const token = useSelector((state) => state.token);
   const { id } = useParams();
   const theme = useTheme();
@@ -242,7 +245,7 @@ const UpdateProfile = (props) => {
                 />
                 <TextField
                   label="Confirm Password"
-                  type="password"
+                  type={showPassword ? "text" : "password"} 
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.password}
@@ -250,6 +253,18 @@ const UpdateProfile = (props) => {
                   error={Boolean(touched.password) && Boolean(errors.password)}
                   helperText={touched.password && errors.password}
                   sx={{ gridColumn: "span 4" }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowPassword(prev => !prev)}
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
                 />
               </Box>
 

@@ -55,14 +55,14 @@ const ProfilePage = (props) => {
       }
     );
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
     dispatch(setFriends({ friends: data }));
     setReRender((prev) => !prev);
   };
 
   if (followClick) patchFriend();
 
-  console.log(userID);
+  // console.log(userID);
 
   return (
     <Box>
