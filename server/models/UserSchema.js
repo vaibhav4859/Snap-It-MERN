@@ -28,6 +28,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
+    profilePhoto: {
+        type: String,
+        default: "",
+    },
     friends: {
         type: Array,
         default: [],

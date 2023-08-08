@@ -8,7 +8,6 @@ import mongoose from "mongoose";
 import axios from 'axios';
 
 export const register = async (req, res) => {
-    console.log(req.body);
     try {
         const salt = await bcrypt.genSalt(); // random salt provided by bcrypt and we use this salt to encrypt our password
         const passwordHash = await bcrypt.hash(req.body.password, salt); // then this random salt is hashed with our password and it is encrypted and a random encrypted string is generated

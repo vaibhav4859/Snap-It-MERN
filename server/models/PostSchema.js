@@ -31,6 +31,7 @@ const postSchema = new mongoose.Schema({
     location: String,
     description: String,
     picturePath: String,
+    postImage: String,
     userPicturePath: String,
 }, { timestamps: true }
 );
