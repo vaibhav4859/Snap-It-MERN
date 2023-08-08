@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 
 export const createPost = async (req, res) => {
     try {
-        const { userId, description, picturePath } = req.body;
+        const { userId, description, postImage } = req.body;
         const user = await User.findById(userId);
         const newPost = new Post({
             userId,
@@ -12,8 +12,8 @@ export const createPost = async (req, res) => {
             lastName: user.lastName,
             location: user.location,
             description,
-            userPicturePath: user.picturePath,
-            picturePath,
+            userProfilePhoto: user.profilePhoto,
+            postImage,
             likes: {},
             comments: [],
         });
@@ -31,17 +31,14 @@ export const getFeedPosts = async (req, res) => {
     try {
         const { id } = req.params;
         const user = await User.findById(id);
-        const myPosts = await Post.find({userId : id});
-        console.log(myPosts);
+        const myPosts = await Post.find({ userId: id });
         let post = await Post.find().sort({ 'createdAt': -1 });
-        // console.log(id, user, user.friends);
 
         post = post.filter(item => {
             return user.friends.includes(item.userId);
         });
 
         post = [...post, ...myPosts];
-        
         res.status(StatusCodes.OK).json(post);
     } catch (error) {
         res.status(StatusCodes.NOT_FOUND).json({ message: error.message });
@@ -87,7 +84,6 @@ export const likePost = async (req, res) => {
 export const commentOnPost = async (req, res) => {
     try {
         const { id } = req.params;
-        // console.log(id, req.body);
         const { name, image, comment, userId } = req.body;
 
         let obj = { name: name, image: image, comment: comment, userId };
@@ -113,8 +109,6 @@ export const deleteComment = async (req, res) => {
 
         const post = await Post.findById(id);
         const comments = post.comments;
-
-        console.log(index, comments);
 
         const updatedComments = comments.filter((val, idx) => idx !== index);
 

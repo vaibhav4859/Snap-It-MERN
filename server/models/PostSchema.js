@@ -20,19 +20,18 @@ const postSchema = new mongoose.Schema({
     comments: {
         type: Array,
     },
-    showLikes:{
-        type:Boolean,
+    showLikes: {
+        type: Boolean,
         default: true,
     },
-    showComments:{
-        type:Boolean,
+    showComments: {
+        type: Boolean,
         default: true,
     },
     location: String,
     description: String,
-    picturePath: String,
     postImage: String,
-    userPicturePath: String,
+    userProfilePhoto: String,
 }, { timestamps: true }
 );
 

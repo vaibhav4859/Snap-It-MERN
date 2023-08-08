@@ -3,7 +3,6 @@ import { StatusCodes } from 'http-status-codes';
 
 export const postMessage = async (req, res) => {
     try {
-        // const { reciever, message, sender } = req.body;
         const newMessage = new Message({
             ...req.body,
         });
@@ -18,7 +17,6 @@ export const postMessage = async (req, res) => {
 export const getMessage = async (req, res) => {
     try {
         const { reciever, sender } = req.body; // reciever-samne wala sender-me
-        console.log(req.body);
 
         const sendMessages = await Message.find({
             sender: sender,
@@ -39,7 +37,6 @@ export const getMessage = async (req, res) => {
                 message: msg.message,
             }
         });
-        console.log(allMessages);
 
         res.status(StatusCodes.OK).json(allMessages);
     } catch (error) {

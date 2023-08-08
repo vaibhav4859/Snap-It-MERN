@@ -11,11 +11,10 @@ export const getUser = async (req, res) => {
 
         const arrayUser = [user];
         const formattedUser = arrayUser.map(
-            ({ _id, firstName, lastName, occupation, location, picturePath, email, friends, linkedinUrl, twitterUrl, viewedProfile, impressions, otp }) => {
-                return { _id, firstName, lastName, occupation, location, picturePath, email, friends, linkedinUrl, twitterUrl, viewedProfile, impressions, otp };
+            ({ _id, firstName, lastName, occupation, location, profilePhoto, email, friends, linkedinUrl, twitterUrl, viewedProfile, impressions, otp }) => {
+                return { _id, firstName, lastName, occupation, location, profilePhoto, email, friends, linkedinUrl, twitterUrl, viewedProfile, impressions, otp };
             }
         );
-        console.log(formattedUser[0]);
         res.status(StatusCodes.OK).json(formattedUser[0]);
     } catch (error) {
         res.status(StatusCodes.NOT_FOUND).json({ message: error.message });
@@ -31,8 +30,8 @@ export const getSingleUser = async (req, res) => {
         let formattedUser = singleUser;
         if (singleUser) {
             formattedUser = singleUser.map(
-                ({ _id, firstName, lastName, occupation, location, picturePath }) => {
-                    return { _id, firstName, lastName, occupation, location, picturePath };
+                ({ _id, firstName, lastName, occupation, location, profilePhoto }) => {
+                    return { _id, firstName, lastName, occupation, location, profilePhoto };
                 }
             );
         }
@@ -52,11 +51,10 @@ export const getUserFriends = async (req, res) => {
         );
 
         const formattedFriends = friends.map(
-            ({ _id, firstName, lastName, occupation, location, picturePath }) => {
-                return { _id, firstName, lastName, occupation, location, picturePath };
+            ({ _id, firstName, lastName, occupation, location, profilePhoto }) => {
+                return { _id, firstName, lastName, occupation, location, profilePhoto };
             }
         );
-        // console.log(friends, formattedFriends);
         res.status(StatusCodes.OK).json(formattedFriends);
     } catch (err) {
         res.status(StatusCodes.NOT_FOUND).json({ message: err.message });
@@ -72,11 +70,9 @@ export const getSuggestedUsers = async (req, res) => {
         const suggestedUsers = allUsers.filter(item => {
             return user.friends.includes(item._id.toString()) === false && item._id != id;
         })
-        // console.log(suggestedUsers.length);
-
         const formattedSuggested = suggestedUsers.map(
-            ({ _id, firstName, lastName, occupation, location, picturePath }) => {
-                return { _id, firstName, lastName, occupation, location, picturePath };
+            ({ _id, firstName, lastName, occupation, location, profilePhoto }) => {
+                return { _id, firstName, lastName, occupation, location, profilePhoto };
             }
         );
 
@@ -91,7 +87,6 @@ export const addRemoveFriend = async (req, res) => {
         const { id, friendId } = req.params;
         const user = await User.findById(id);
         const friend = await User.findById(friendId);
-        console.log(id, user, friendId, friend);
 
         if (user.friends.includes(friendId)) {
             user.friends = user.friends.filter((id) => id !== friendId);
@@ -104,22 +99,17 @@ export const addRemoveFriend = async (req, res) => {
         await user.save();
         await friend.save();
 
-        console.log("after ", user, friend);
-
         const friends = await Promise.all(
             user.friends.map((id) => User.findById(id))
         );
 
         const formattedFriends = friends.map(
-            ({ _id, firstName, lastName, occupation, location, picturePath }) => {
-                return { _id, firstName, lastName, occupation, location, picturePath };
+            ({ _id, firstName, lastName, occupation, location, profilePhoto }) => {
+                return { _id, firstName, lastName, occupation, location, profilePhoto };
             }
         );
-
-        console.log(formattedFriends);
         res.status(StatusCodes.OK).json(formattedFriends);
     } catch (err) {
-        console.log(err);
         res.status(StatusCodes.NOT_FOUND).json({ message: err.message });
     }
 };
@@ -131,7 +121,6 @@ export const updateSocialProfile = async (req, res) => {
         const user = await User.findById(id);
         user.linkedinUrl = linkedinURL;
         user.twitterUrl = twitterURL;
-        console.log(user);
         const updatedUser = await User.findOneAndUpdate({ _id: id }, {
             ...user,
         }, { new: true, runValidators: true });
@@ -145,7 +134,7 @@ export const updateSocialProfile = async (req, res) => {
 export const deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const {password} = req.body;
+        const { password } = req.body;
 
         const user = await User.findById(id);
         const isMatch = await bcrypt.compare(password, user.password);
@@ -164,9 +153,9 @@ export const deleteUser = async (req, res) => {
 
         await User.findByIdAndDelete(id);
         const allUsers = await User.find({});
-        for(let user of allUsers){
+        for (let user of allUsers) {
             const index = user.friends.indexOf(id);
-            if(index != -1) user.friends.splice(index, 1);
+            if (index != -1) user.friends.splice(index, 1);
             await user.save();
         }
 

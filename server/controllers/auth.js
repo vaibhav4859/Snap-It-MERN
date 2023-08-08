@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import User from "../models/UserSchema.js";
 import Post from '../models/PostSchema.js'
 import { StatusCodes } from 'http-status-codes';
-// import fs from 'fs';
 import mongoose from "mongoose";
 import axios from 'axios';
 
@@ -47,16 +46,12 @@ export const login = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
-        const { password, email, picturePath } = req.body;
+        const { password, email, profilePhoto } = req.body;
         const user = await User.findOne({ email: email });
         if (!user) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "User does not exist." });
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Incorrect Password" });
-
-        // if (user.picturePath !== picturePath) {
-        //     fs.unlink(`../server/public/assets/${user.picturePath}`, (err => console.log(err)))
-        // } // remove photo from backend that is no longer in use
 
         const { id } = req.params;
         const salt = await bcrypt.genSalt();
@@ -64,7 +59,7 @@ export const update = async (req, res) => {
 
         const updatedUser = await User.findOneAndUpdate({ _id: id }, {
             ...req.body,
-            password: passwordHash
+            password: passwordHash,
         }, {
             new: true,
             runValidators: true,
@@ -73,7 +68,6 @@ export const update = async (req, res) => {
         if (!updatedUser) return res.status(StatusCodes.BAD_REQUEST).json({ msg: "User is not updated! " });
 
         const posts = await Post.find({});
-        // console.log(posts.length, picturePath);
 
         posts.forEach(async (value, index) => {
             let newComments = [];
@@ -81,7 +75,7 @@ export const update = async (req, res) => {
                 if (comment.userId === id) {
                     newComments.push({
                         ...comment,
-                        image: picturePath
+                        image: profilePhoto
                     });
                 } else newComments.push(comment);
 
@@ -89,6 +83,8 @@ export const update = async (req, res) => {
             }
 
             const newId = new mongoose.Types.ObjectId();
+            let userProfilePhoto = value.userProfilePhoto;
+            if (value.userId === id) userProfilePhoto = profilePhoto;
             const post = {
                 firstName: value.firstName,
                 lastName: value.lastName,
@@ -98,8 +94,8 @@ export const update = async (req, res) => {
                 comments: value.comments,
                 location: value.location,
                 description: value.description,
-                picturePath: value.picturePath,
-                userPicturePath: value.userPicturePath
+                postImage: value.postImage,
+                userProfilePhoto: userProfilePhoto
             }
             await Post.findByIdAndDelete({ _id: value.id });
             const newPost = new Post(post);
@@ -116,7 +112,7 @@ export const update = async (req, res) => {
 export const sendRegistrationMail = async (req, res) => {
     try {
         const { name, email } = req.body;
-        const otp = Math.floor(Math.random() * 10000);
+        let otp = Math.floor(Math.random() * 10000);
         if (otp < 1000 || otp > 9999) otp = 6969;
         console.log(otp);
 
@@ -146,7 +142,6 @@ export const sendRegistrationMail = async (req, res) => {
         });
 
         console.log('Email sent successfully:', response.data);
-        // console.log('Email sent successfully:');
         res.status(StatusCodes.OK).json(otp);
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
@@ -155,19 +150,16 @@ export const sendRegistrationMail = async (req, res) => {
 
 export const sendMail = async (req, res) => {
     try {
-        console.log("sendotp");
         const { name, email } = req.body;
         const otp = Math.floor(Math.random() * 10000);
         if (otp < 1000 || otp > 9999) otp = 6969;
 
         let user = await User.findOne({ email: email });
-        console.log(user);
         user.otp = otp;
 
         const updatedUser = await User.findOneAndUpdate({ email: email }, {
             ...user,
         }, { new: true, runValidators: true });
-        console.log(updatedUser);
 
         const response = await axios({
             method: 'post',
@@ -195,20 +187,17 @@ export const sendMail = async (req, res) => {
         });
 
         console.log('Email sent successfully:', response.data);
-        // console.log('Email sent successfully:');
         res.status(StatusCodes.OK).json(updatedUser);
     } catch (error) {
-        console.log(error);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: `Error sending email: ${error}` });
     }
 }
 
 export const verifyOtp = async (req, res) => {
     try {
-        console.log("verifyotp");
         const { enteredOtp, email } = req.body;
         const user = await User.find({ email: email });
-        
+
         if (String(user[0].otp) === String(enteredOtp)) res.status(StatusCodes.OK).json(true);
         else res.status(StatusCodes.OK).json(false);
     } catch (error) {
@@ -219,7 +208,6 @@ export const verifyOtp = async (req, res) => {
 export const updatePassword = async (req, res) => {
     try {
         const { email, newPassword } = req.body;
-        console.log(email, newPassword);
         const salt = await bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(newPassword, salt);
 
@@ -235,13 +223,3 @@ export const updatePassword = async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }
-
-
-
-// https://www.npmjs.com/package/bcrypt
-// A library to help you hash passwords. BCrypt Algorithm is used to hash and salt passwords securely.
-// to guard against dangers or threats in the long run, like attackers having the computing power to guess passwords twice as quickly.
-
-// https://jwt.io/
-// https://github.com/vaibhav4859/Node-Practice-Session/tree/main/JWT
-// Visit these links for jwt understanding and verfication / authentication
