@@ -12,7 +12,7 @@ const PostsWidget = ({
   setReRender,
   home,
   state,
-  setFlags
+  setFlags,
 }) => {
   const dispatch = useDispatch();
   const posts = useSelector((state) => state.posts);
@@ -33,7 +33,7 @@ const PostsWidget = ({
       setPostsData(arr);
     };
     getMorePosts(); // eslint-disable-next-line
-  }, [state, reRender, flag]); 
+  }, [state, reRender, flag]);
 
   useEffect(() => {
     if (isProfile) {
@@ -46,16 +46,18 @@ const PostsWidget = ({
           }
         );
         const data = await response.json();
-        // console.log(data);
         dispatch(setPosts({ posts: data }));
       };
       getUserPosts();
     } else {
       const getPosts = async () => {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/posts/${userId}`, {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/posts/${userId}`,
+          {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         const data = await response.json();
         dispatch(setPosts({ posts: data }));
         setPostsData([]);
@@ -65,10 +67,8 @@ const PostsWidget = ({
     } // eslint-disable-next-line
   }, [dispatch, token, userId, isProfile, reRender]);
 
-// console.log(posts);
-
   let allPosts = postsData;
-  if(isProfile) allPosts = posts;
+  if (isProfile) allPosts = posts;
 
   return (
     <div className="main-container">
@@ -87,8 +87,8 @@ const PostsWidget = ({
               lastName,
               description,
               location,
-              picturePath,
-              userPicturePath,
+              postImage,
+              userProfilePhoto,
               likes,
               comments,
               showLikes,
@@ -102,8 +102,8 @@ const PostsWidget = ({
                 name={`${firstName} ${lastName}`}
                 description={description}
                 location={location}
-                picturePath={picturePath}
-                userPicturePath={userPicturePath}
+                postImage={postImage}
+                userProfilePhoto={userProfilePhoto}
                 likes={likes}
                 comments={comments}
                 showLikes={showLikes}

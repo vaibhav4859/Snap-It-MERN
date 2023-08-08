@@ -11,7 +11,7 @@ const FriendListWidget = ({
   setReRender,
   profile,
   followClick,
-  flags
+  flags,
 }) => {
   const dispatch = useDispatch();
   const { palette } = useTheme();
@@ -28,14 +28,12 @@ const FriendListWidget = ({
       }
     );
     const data = await response.json();
-    // console.log(data, userId);
     dispatch(setFriends({ friends: data }));
   };
 
   useEffect(() => {
-    getFriends();
+    getFriends(); // eslint-disable-next-line
   }, [followClick, flags]);
-  // console.log(followClick, friends);
 
   return (
     <WidgetWrapper maxHeight="14rem" friend="true">
@@ -54,7 +52,7 @@ const FriendListWidget = ({
             friendId={friend._id}
             name={`${friend.firstName} ${friend.lastName}`}
             subtitle={friend.occupation}
-            userPicturePath={friend.picturePath}
+            userProfilePhoto={friend.profilePhoto}
             reRender={reRender}
             setReRender={setReRender}
             profile={profile}

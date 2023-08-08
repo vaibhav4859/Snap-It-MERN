@@ -35,7 +35,6 @@ const Chat = ({ user }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [userFriends, setUserFriends] = useState([]);
 
-  // console.log(user);
   useEffect(() => {
     const getUser = async () => {
       const response = await fetch(
@@ -114,13 +113,13 @@ const Chat = ({ user }) => {
                     onClick={() => setCurrentUser(user)}
                   >
                     <img
-                      src={`${process.env.REACT_APP_BACKEND_URL}/assets/${user.picturePath}`}
+                      src={`${user.profilePhoto}`}
                       alt={user.name}
                       style={{
                         borderRadius: "50%",
                         width: isNonMobileScreens ? "45px" : "30px",
                         height: isNonMobileScreens ? "45px" : "30px",
-                        objectFit:"cover"
+                        objectFit: "cover",
                       }}
                     />
                     <div
@@ -153,11 +152,8 @@ const Chat = ({ user }) => {
               })}
             </List>
           </Grid>
-          {/* <Divider orientation="vertical" flexItem sx={{ padding: "0 1rem" }} /> */}
-          <Box
-            // border="1px solid red"
-            sx={{ width: isNonMobileScreens ? "74%" : "55%" }}
-          >
+
+          <Box sx={{ width: isNonMobileScreens ? "74%" : "55%" }}>
             {!currentUser ? (
               <div
                 style={{

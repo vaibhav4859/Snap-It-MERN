@@ -4,7 +4,6 @@ import UserWidget from "./widgets/UserWidget";
 import MyPostWidget from "./widgets/MyPostWidget";
 import PostsWidget from "./widgets/PostsWidget";
 import AdvertWidget from "./widgets/AdvertWidget";
-// import FriendListWidget from "./widgets/FriendListWidget";
 import SuggestedWidget from "./widgets/SuggestedWidget";
 import { useState } from "react";
 
@@ -15,7 +14,8 @@ const HomePage = (props) => {
 
   function isPageBottom() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+    const windowHeight =
+      window.innerHeight || document.documentElement.clientHeight;
     const documentHeight = Math.max(
       document.body.scrollHeight,
       document.documentElement.scrollHeight,
@@ -24,19 +24,17 @@ const HomePage = (props) => {
       document.body.clientHeight,
       document.documentElement.clientHeight
     );
-    
+
     return scrollTop + windowHeight >= documentHeight - 30;
   }
-  
-  // Example usage
-  window.addEventListener("scroll", function() {
+
+  window.addEventListener("scroll", function () {
     if (isPageBottom()) {
       // Reached the bottom of the page
-      setState(prev => !prev);
+      setState((prev) => !prev);
       console.log("Reached the bottom of the page");
     }
   });
-  
 
   return (
     <Box>
@@ -49,7 +47,7 @@ const HomePage = (props) => {
         justifyContent="space-between"
       >
         <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
-          <UserWidget user={props.user} home={true}/>
+          <UserWidget user={props.user} home={true} />
         </Box>
         {!isNonMobileScreens && (
           <Box flexBasis="26%">
@@ -65,7 +63,7 @@ const HomePage = (props) => {
           flexBasis={isNonMobileScreens ? "42%" : undefined}
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
-          <MyPostWidget picturePath={props.user.picturePath} />
+          <MyPostWidget profilePhoto={props.user.profilePhoto} />
           <PostsWidget
             userId={props.user._id}
             user={props.user}
@@ -79,7 +77,6 @@ const HomePage = (props) => {
           <Box flexBasis="26%">
             <AdvertWidget />
             <Box m="2rem 0" />
-            {/* <FriendListWidget userId={props.user._id} reRender={reRender} setReRender={setReRender} /> */}
             <SuggestedWidget
               userId={props.user._id}
               reRender={reRender}

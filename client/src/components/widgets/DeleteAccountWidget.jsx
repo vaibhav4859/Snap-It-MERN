@@ -49,13 +49,12 @@ export default function DeleteAccountWidget(props) {
         }),
       }
     );
-    
+
     const res = await response.json();
-    console.log(res);
-    if(res === "Incorrect Password!"){
+    if (res === "Incorrect Password!") {
       alert(res);
-    } else{
-      dispatch(setLogout())
+    } else {
+      dispatch(setLogout());
     }
 
     setClicked(false);
@@ -82,7 +81,9 @@ export default function DeleteAccountWidget(props) {
               onChange={(e) => setEnteredPassword(e.target.value)}
               value={enteredPassword}
               name="password" // eslint-disable-next-line
-              error={enteredPassword && enteredPassword.length < 6 ? true : false} // eslint-disable-next-line
+              error={
+                enteredPassword && enteredPassword.length < 6 ? true : false
+              } // eslint-disable-next-line
               helperText={
                 enteredPassword &&
                 enteredPassword.length < 6 &&
@@ -108,11 +109,13 @@ export default function DeleteAccountWidget(props) {
             sx={{
               m: "1rem 0",
               p: "0.3rem",
-              backgroundColor: !clicked ? theme.palette.primary.main : "#808080",
-                color: !clicked ? theme.palette.background.alt : "#101010",
+              backgroundColor: !clicked
+                ? theme.palette.primary.main
+                : "#808080",
+              color: !clicked ? theme.palette.background.alt : "#101010",
               "&:hover": {
                 color: !clicked ? theme.palette.primary.main : null,
-                  backgroundColor: !clicked ? null : "#808080",
+                backgroundColor: !clicked ? null : "#808080",
               },
             }}
             disabled={enteredPassword.length < 6 || clicked}

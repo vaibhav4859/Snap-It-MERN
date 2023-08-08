@@ -30,7 +30,6 @@ const NavBar = (props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
-  // const mode = useSelector((state) => state.mode);
 
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
@@ -89,7 +88,10 @@ const NavBar = (props) => {
               <LightMode sx={{ color: dark, fontSize: "25px" }} />
             )}
           </IconButton>
-          <Message sx={{ fontSize: "25px", cursor:"pointer" }} onClick={() => navigate('/chat')}/>
+          <Message
+            sx={{ fontSize: "25px", cursor: "pointer" }}
+            onClick={() => navigate("/chat")}
+          />
           <Notifications sx={{ fontSize: "25px" }} />
           <Help sx={{ fontSize: "25px" }} />
           <FormControl variant="standard" value={fullName}>
@@ -179,7 +181,10 @@ const NavBar = (props) => {
                 <LightMode sx={{ color: dark, fontSize: "25px" }} />
               )}
             </IconButton>
-            <Message sx={{ fontSize: "25px", cursor:"pointer" }} onClick={() => navigate('/chat')}/>
+            <Message
+              sx={{ fontSize: "25px", cursor: "pointer" }}
+              onClick={() => navigate("/chat")}
+            />
             <Notifications sx={{ fontSize: "25px" }} />
             <Help sx={{ fontSize: "25px" }} />
             <FormControl variant="standard" value={fullName}>

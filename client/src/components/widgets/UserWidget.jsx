@@ -63,8 +63,6 @@ const UserWidget = (props) => {
     friends,
   } = props.user;
 
-  console.log(openModal);
-
   const addProfiles = async (e) => {
     e.preventDefault();
     setClicked(true);
@@ -89,7 +87,6 @@ const UserWidget = (props) => {
     );
 
     const updatedUser = await response.json();
-    // console.log(updatedUser);
 
     if (updatedUser.error) {
       setClicked(false);
@@ -113,7 +110,7 @@ const UserWidget = (props) => {
         onClick={() => navigate(`/profile/${props.user._id}`)}
       >
         <FlexBetween gap="1rem">
-          <UserImage image={props.user.picturePath} />
+          <UserImage image={props.user.profilePhoto} />
           <Box>
             <Typography
               variant="h4"
@@ -197,10 +194,12 @@ const UserWidget = (props) => {
                   <Typography color={medium}>Social Network</Typography>
                 </Box>
               </FlexBetween>
-              {(props.userId === myself._id || props.home) && <EditOutlined
-                sx={{ color: main }}
-                onClick={() => setShowTwitter(true)}
-              />}
+              {(props.userId === myself._id || props.home) && (
+                <EditOutlined
+                  sx={{ color: main }}
+                  onClick={() => setShowTwitter(true)}
+                />
+              )}
             </>
           )}
           {showTwitter && (
@@ -276,10 +275,12 @@ const UserWidget = (props) => {
                   <Typography color={medium}>Network Platform</Typography>
                 </Box>
               </FlexBetween>
-              {(props.userId === myself._id || props.home) && <EditOutlined
-                sx={{ color: main }}
-                onClick={() => setShowLinkedin(true)}
-              />}
+              {(props.userId === myself._id || props.home) && (
+                <EditOutlined
+                  sx={{ color: main }}
+                  onClick={() => setShowLinkedin(true)}
+                />
+              )}
             </>
           )}
           {showLinkedin && (
@@ -334,75 +335,79 @@ const UserWidget = (props) => {
           )}
         </FlexBetween>
 
-        {(props.userId === myself._id || props.home) && <div>
-        <Divider />
-          <Button
-            fullWidth
-            type="button"
-            sx={{
-              m: "1rem 0",
-              p: "0.3rem",
-              backgroundColor: theme.palette.primary.main,
-              color: theme.palette.background.alt,
-              "&:hover": {
-                color: theme.palette.primary.main,
-              },
-            }}
-            onClick={() => navigate(`/update/${props.user._id}`)}
-          >
-            UPDATE PROFILE
-          </Button>
-          <Typography
-            color={main}
-            fontWeight="500"
-            textAlign="center"
-            margin="-0.6rem 0"
-          >
-            OR
-          </Typography>
-          <Button
-            fullWidth
-            type="button"
-            sx={{
-              m: "1rem 0",
-              p: "0.3rem",
-              backgroundColor: theme.palette.primary.main,
-              color: theme.palette.background.alt,
-              "&:hover": {
-                color: theme.palette.primary.main,
-              },
-            }}
-            onClick={() => navigate(`/update/${props.user._id}/password`)}
-          >
-            UPDATE PASSWORD
-          </Button>
-          <Typography
-            color={main}
-            fontWeight="500"
-            textAlign="center"
-            margin="-0.6rem 0"
-          >
-            OR
-          </Typography>
-          <Button
-            fullWidth
-            type="button"
-            sx={{
-              m: "1rem 0",
-              p: "0.3rem",
-              backgroundColor: "#f43636",
-              color: theme.palette.background.alt,
-              "&:hover": {
-                color: "#f43636",
-                backgroundColor: "rgba(213, 0, 0, 0.08)"
-              },
-            }}
-            onClick={() => setOpenModal(prev => !prev)}
-          >
-            DELETE ACCOUNT
-          </Button>
-        </div>}
-        {openModal && <DeleteAccountWidget setOpenModal={setOpenModal} user={myself} />}
+        {(props.userId === myself._id || props.home) && (
+          <div>
+            <Divider />
+            <Button
+              fullWidth
+              type="button"
+              sx={{
+                m: "1rem 0",
+                p: "0.3rem",
+                backgroundColor: theme.palette.primary.main,
+                color: theme.palette.background.alt,
+                "&:hover": {
+                  color: theme.palette.primary.main,
+                },
+              }}
+              onClick={() => navigate(`/update/${props.user._id}`)}
+            >
+              UPDATE PROFILE
+            </Button>
+            <Typography
+              color={main}
+              fontWeight="500"
+              textAlign="center"
+              margin="-0.6rem 0"
+            >
+              OR
+            </Typography>
+            <Button
+              fullWidth
+              type="button"
+              sx={{
+                m: "1rem 0",
+                p: "0.3rem",
+                backgroundColor: theme.palette.primary.main,
+                color: theme.palette.background.alt,
+                "&:hover": {
+                  color: theme.palette.primary.main,
+                },
+              }}
+              onClick={() => navigate(`/update/${props.user._id}/password`)}
+            >
+              UPDATE PASSWORD
+            </Button>
+            <Typography
+              color={main}
+              fontWeight="500"
+              textAlign="center"
+              margin="-0.6rem 0"
+            >
+              OR
+            </Typography>
+            <Button
+              fullWidth
+              type="button"
+              sx={{
+                m: "1rem 0",
+                p: "0.3rem",
+                backgroundColor: "#f43636",
+                color: theme.palette.background.alt,
+                "&:hover": {
+                  color: "#f43636",
+                  backgroundColor: "rgba(213, 0, 0, 0.08)",
+                },
+              }}
+              onClick={() => setOpenModal((prev) => !prev)}
+            >
+              DELETE ACCOUNT
+            </Button>
+          </div>
+        )}
+        {openModal && (
+          <DeleteAccountWidget setOpenModal={setOpenModal} user={myself} />
+        )}
       </Box>
     </WidgetWrapper>
   );

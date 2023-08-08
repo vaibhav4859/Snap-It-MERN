@@ -48,7 +48,6 @@ const ChatWidget = ({ user }) => {
   const navigate = useNavigate();
   const mode = theme.palette.mode;
   const mediumMain = theme.palette.neutral.mediumMain;
-  // const medium = theme.palette.neutral.medium;
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const name = `${user.firstName} ${user.lastName}`;
   const [message, setMessage] = useState("");
@@ -56,6 +55,7 @@ const ChatWidget = ({ user }) => {
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [image, setImage] = useState(null);
+  const [flag, setFlag] = useState(false);
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const scrollRef = useRef();
   const socket = useRef();
@@ -63,8 +63,6 @@ const ChatWidget = ({ user }) => {
 
   const handleFileInputChange = (event) => {
     const file = event.target.files[0];
-    // Perform further actions with the selected file
-    console.log("Selected file:", file);
     setImage(file);
     setOpenModal(true);
   };
@@ -91,7 +89,6 @@ const ChatWidget = ({ user }) => {
           }
         );
         const response = await res.json();
-        // console.log(response);
         setChatMessages(response);
       } catch (error) {
         console.log(error);
@@ -104,9 +101,9 @@ const ChatWidget = ({ user }) => {
     const bottomAnchor = document.getElementById("bottomAnchor");
     bottomAnchor.scrollIntoView();
     setTimeout(() => {
-      setChatMessages(prev => [...prev]);
+      setFlag(true);
     }, 2500);
-  }, [chatMessages]);
+  }, [flag, chatMessages]);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behaviour: "smooth" });
@@ -148,12 +145,12 @@ const ChatWidget = ({ user }) => {
 
     setChatMessages(chatMessages.concat(currMessage));
     setMessage("");
+    setFlag((prev) => !prev);
   };
 
   useEffect(() => {
     if (socket.current) {
       socket.current.on("msg-recieve", (msg) => {
-        console.log(msg);
         setArrivalMessage({
           myself: false,
           message: msg,
@@ -177,8 +174,6 @@ const ChatWidget = ({ user }) => {
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          // Observe state change events such as progress, pause, and resume
-          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log("Upload is " + progress + "% done");
@@ -194,14 +189,10 @@ const ChatWidget = ({ user }) => {
           }
         },
         (error) => {
-          // Handle unsuccessful uploads
           console.log(error);
         },
         () => {
-          // Handle successful uploads on complete
-          // For instance, get the download URL: https://firebasestorage.googleapis.com/...
           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-            console.log(downloadURL);
             const currMessage = {
               myself: true,
               message: downloadURL,
@@ -249,7 +240,7 @@ const ChatWidget = ({ user }) => {
         }}
       >
         <img
-          src={`${process.env.REACT_APP_BACKEND_URL}/assets/${user.picturePath}`}
+          src={`${user.profilePhoto}`}
           alt=""
           width={isNonMobileScreens ? "45px" : "35px"}
           height={isNonMobileScreens ? "45px" : "35px"}
@@ -267,7 +258,7 @@ const ChatWidget = ({ user }) => {
             },
             cursor: "pointer",
           }}
-          onClick = {() => navigate(`/profile/${user._id}`)}
+          onClick={() => navigate(`/profile/${user._id}`)}
         >
           {name.length <= 20 ? name : `${name.substring(0, 20)}...`}
         </Typography>
@@ -295,7 +286,7 @@ const ChatWidget = ({ user }) => {
               >
                 {!message.myself && (
                   <img
-                    src={`${process.env.REACT_APP_BACKEND_URL}/assets/${user.picturePath}`}
+                    src={`${user.profilePhoto}`}
                     alt=""
                     width={isNonMobileScreens ? "40px" : "30px"}
                     height={isNonMobileScreens ? "40px" : "30px"}
@@ -309,9 +300,12 @@ const ChatWidget = ({ user }) => {
                     src={message.message}
                     alt=""
                     height="auto"
-                    // width={isNonMobileScreens ? "350rem" : "70rem"}
                     width="69%"
-                    style={{ objectFit: "cover", margin: "auto", borderRadius:"1rem" }}
+                    style={{
+                      objectFit: "cover",
+                      margin: "auto",
+                      borderRadius: "1rem",
+                    }}
                   />
                 ) : (
                   <Typography
@@ -375,7 +369,6 @@ const ChatWidget = ({ user }) => {
               )}
               <div style={{ display: "flex" }}>
                 <Button
-                  // type="submit"
                   sx={{
                     m: "1rem 0",
                     p: "0.35rem 1rem",
@@ -395,7 +388,6 @@ const ChatWidget = ({ user }) => {
                   Close
                 </Button>
                 <Button
-                  // type="submit"
                   sx={{
                     m: "1rem 0",
                     p: "0.35rem 1rem",

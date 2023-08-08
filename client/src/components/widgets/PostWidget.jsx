@@ -35,26 +35,29 @@ const PostWidget = ({
   name,
   description,
   location,
-  picturePath,
-  userPicturePath,
+  postImage,
+  userProfilePhoto,
   likes,
   comments,
   showLikes,
   showComments,
   reRender,
   setReRender,
-  setFlags
+  setFlags,
 }) => {
   const [isComments, setIsComments] = useState(false);
   const [comment, setComment] = useState("");
+  const [displayComments, setDisplayComments] = useState(comments);
   const [open, setOpen] = useState(false);
+  const loggedInUserId = useSelector((state) => state.user._id);
+  const [isLiked, setIsLiked] = useState(Boolean(likes[loggedInUserId]));
+  const [likeCount, setLikeCount] = useState(Object.keys(likes).length);
+  const [displayLike, setDisplayLike] = useState(showLikes);
+  const [showDisplayComment, setShowDisplayComment] = useState(showComments);
   const navigate = useNavigate();
   const inputRef = useRef();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
-  const loggedInUserId = useSelector((state) => state.user._id);
-  const isLiked = Boolean(likes[loggedInUserId]);
-  const likeCount = Object.keys(likes).length;
 
   const { palette } = useTheme();
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -69,18 +72,17 @@ const PostWidget = ({
   };
 
   const patchLike = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/like`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: loggedInUserId }),
-      }
-    );
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/like`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: loggedInUserId }),
+    });
     const updatedPost = await response.json();
+    setIsLiked(Boolean(updatedPost.likes[loggedInUserId]));
+    setLikeCount(Object.keys(updatedPost.likes).length);
     dispatch(setPost({ post: updatedPost }));
   };
 
@@ -96,20 +98,19 @@ const PostWidget = ({
         },
         body: JSON.stringify({
           name: `${user.firstName} ${user.lastName}`,
-          image: user.picturePath,
+          image: user.profilePhoto,
           comment,
           userId: user._id,
         }),
       }
     );
     const updatedPost = await response.json();
-    // console.log(updatedPost);
+    setDisplayComments(updatedPost.comments);
     dispatch(setPost({ post: updatedPost }));
     setComment("");
   };
 
   const deleteComment = async (index) => {
-    // console.log("hi", index);
     const response = await fetch(
       `${process.env.REACT_APP_BACKEND_URL}/posts/${postId}/comment`,
       {
@@ -122,40 +123,43 @@ const PostWidget = ({
       }
     );
     const updatedPost = await response.json();
+    setDisplayComments(updatedPost.comments);
     dispatch(setPost({ post: updatedPost }));
   };
-
+  
   return (
     <WidgetWrapper m="2rem 0">
       <Friend
         friendId={postUserId}
         name={name}
         subtitle={location}
-        userPicturePath={userPicturePath}
+        userProfilePhoto={userProfilePhoto}
         postId={postId}
         user={user}
-        showComments={showComments}
-        showLikes={showLikes}
         reRender={reRender}
         setReRender={setReRender}
         post={true}
         setFlags={setFlags}
+        setShowDisplayComment={setShowDisplayComment}
+        showDisplayComment={showDisplayComment}
+        setDisplayLike={setDisplayLike}
+        displayLike={displayLike}
       />
       <Typography color={main} sx={{ mt: "1rem" }}>
         {description}
       </Typography>
-      {picturePath && (
+      {postImage && (
         <img
           width="100%"
           height="auto"
           alt="post"
           style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-          src={`${process.env.REACT_APP_BACKEND_URL}/assets/${picturePath}`}
+          src={`${postImage}`}
         />
       )}
       <FlexBetween mt="0.25rem">
         <FlexBetween gap="1rem">
-          {showLikes && (
+          {displayLike && (
             <FlexBetween gap="0.3rem">
               <IconButton onClick={patchLike}>
                 {isLiked ? (
@@ -168,7 +172,7 @@ const PostWidget = ({
             </FlexBetween>
           )}
 
-          {showComments && (
+          {showDisplayComment && (
             <FlexBetween gap="0.3rem">
               <IconButton onClick={() => setIsComments(!isComments)}>
                 <ChatBubbleOutlineOutlined />
@@ -185,7 +189,7 @@ const PostWidget = ({
       {isComments && showComments && (
         <>
           <Box sx={{ mt: "0.5rem", overflowY: "scroll", maxHeight: "7rem" }}>
-            {comments.map((comment, index) => (
+            {displayComments.map((comment, index) => (
               <Box key={`${name}-${index}`}>
                 <Divider />
                 <Typography
@@ -260,7 +264,7 @@ const PostWidget = ({
             </Dialog>
             <TextField
               label="Add your comment here"
-              onChange={(e) => setComment(e.target.value.trimLeft())}
+              onChange={(e) => setComment(e.target.value.trimStart())}
               ref={inputRef}
               value={comment}
               name="comment"

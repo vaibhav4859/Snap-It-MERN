@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -23,6 +23,13 @@ import NavBar from "./NavBar";
 import { setLogin } from "store";
 import { setPosts } from "store";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import app from "../firebase";
 
 const validationSchema = yup.object().shape({
   firstName: yup.string().required("required").min(2).max(12),
@@ -31,13 +38,15 @@ const validationSchema = yup.object().shape({
   password: yup.string().required("required").min(5),
   location: yup.string().required("required"),
   occupation: yup.string().required("required"),
-  picture: yup.string().required("required"),
+  profilePhoto: yup.string().required("required"),
 });
 
 const UpdateProfile = (props) => {
   const [clicked, setClicked] = useState(false);
   const [error, setError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
   const token = useSelector((state) => state.token);
   const { id } = useParams();
   const theme = useTheme();
@@ -53,34 +62,74 @@ const UpdateProfile = (props) => {
     password: "",
     location: props.user.location,
     occupation: props.user.occupation,
-    picture: props.user.picturePath,
+    profilePhoto: "Click here to change your profile photo",
   };
+
+  const uploadImage = async () => {
+    if (image !== null) {
+      const fileName = new Date().getTime() + image?.name;
+      const storage = getStorage(app);
+      const StorageRef = ref(storage, fileName);
+
+      const uploadTask = uploadBytesResumable(StorageRef, image);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+            default:
+              break;
+          }
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+            setImageUrl(downloadURL);
+          });
+        }
+      );
+    }
+  };
+
+  useEffect(() => {
+    uploadImage(); // eslint-disable-next-line
+  }, [image]);
 
   const handleFormSubmit = async (values, onSubmitProps) => {
     setClicked(true);
-    const formData = new FormData();
-    for (let value in values) {
-      formData.append(value, values[value]);
-    }
-    if (values.picture.name) {
-      formData.append("picturePath", values.picture.name);
-    }
+    const formData = {
+      ...values,
+    };
 
-    for (var key of formData.entries()) {
-      console.log(key[0] + ", " + key[1]);
-    }
+    if (values.profilePhoto !== "Click here to change your profile photo") {
+      formData.profilePhoto = imageUrl;
+    } else formData.profilePhoto = props.user.profilePhoto;
+
     onSubmitProps.resetForm();
     const savedUserResponse = await fetch(
       `${process.env.REACT_APP_BACKEND_URL}/auth/update/${id}`,
       {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       }
     );
     const { updatedUser: savedUser, updatedPosts } =
       await savedUserResponse.json();
-    console.log(savedUser);
     if (savedUser.msg === "Incorrect Password") {
       values.password = "";
       setError(true);
@@ -129,7 +178,7 @@ const UpdateProfile = (props) => {
             handleChange,
             handleSubmit,
             setFieldValue,
-            resetForm
+            resetForm,
           }) => (
             <form onSubmit={handleSubmit}>
               <Box
@@ -203,8 +252,8 @@ const UpdateProfile = (props) => {
                       }}
                       multiple={false}
                       onDrop={(acceptedFiles) => {
-                        setFieldValue("picture", acceptedFiles[0]);
-                        console.log(acceptedFiles, values.pic);
+                        setFieldValue("profilePhoto", acceptedFiles[0]);
+                        setImage(acceptedFiles[0]);
                       }}
                     >
                       {({ getRootProps, getInputProps }) => (
@@ -217,13 +266,14 @@ const UpdateProfile = (props) => {
                           <input
                             type="file"
                             {...getInputProps()}
-                            name="picture"
+                            name="profilePhoto"
                           />
                           <FlexBetween>
                             <Typography>
-                              {values.picture.name
-                                ? values.picture.name
-                                : values.picture}
+                              {values.profilePhoto !==
+                              "Click here to change your profile photo"
+                                ? values.profilePhoto.name
+                                : "Click here to change your profile photo"}
                             </Typography>
                             <EditOutlinedIcon />
                           </FlexBetween>
@@ -245,7 +295,7 @@ const UpdateProfile = (props) => {
                 />
                 <TextField
                   label="Confirm Password"
-                  type={showPassword ? "text" : "password"} 
+                  type={showPassword ? "text" : "password"}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.password}
@@ -258,12 +308,12 @@ const UpdateProfile = (props) => {
                       <InputAdornment position="end">
                         <IconButton
                           aria-label="toggle password visibility"
-                          onClick={() => setShowPassword(prev => !prev)}
+                          onClick={() => setShowPassword((prev) => !prev)}
                         >
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
-                    )
+                    ),
                   }}
                 />
               </Box>
@@ -276,7 +326,7 @@ const UpdateProfile = (props) => {
                 }}
                 sx={{
                   mt: "1rem",
-                  ml:"0.5rem",
+                  ml: "0.5rem",
                   fontWeight: "bold",
                   width: "8rem",
                   textDecoration: "underline",

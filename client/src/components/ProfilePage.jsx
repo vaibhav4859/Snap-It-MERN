@@ -25,20 +25,16 @@ const ProfilePage = (props) => {
 
   useEffect(() => {
     const getUser = async () => {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/users/${userID}`,
-        {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/users/${userID}`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await response.json();
       setUser(data);
     };
     getUser();
   }, [token, userID, reRender, followClick]);
 
-  // console.log(user);
   if (!user) return null;
 
   const patchFriend = async () => {
@@ -55,14 +51,11 @@ const ProfilePage = (props) => {
       }
     );
     const data = await response.json();
-    // console.log(data);
     dispatch(setFriends({ friends: data }));
     setReRender((prev) => !prev);
   };
 
   if (followClick) patchFriend();
-
-  // console.log(userID);
 
   return (
     <Box>
@@ -77,7 +70,7 @@ const ProfilePage = (props) => {
         <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
           <UserWidget
             userId={userID}
-            picturePath={user.picturePath}
+            profilePhoto={user.profilePhoto}
             user={user}
           />
           <Box m="2rem 0" />
@@ -95,7 +88,7 @@ const ProfilePage = (props) => {
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
           {userID === props.id && (
-            <MyPostWidget picturePath={user.picturePath} />
+            <MyPostWidget profilePhoto={user.profilePhoto} />
           )}
           <Box m="2rem 0" />
           {user?.friends?.includes(props.user._id) ||

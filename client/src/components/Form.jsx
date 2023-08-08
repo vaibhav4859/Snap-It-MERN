@@ -21,6 +21,13 @@ import { setLogin } from "../store/index";
 import Dropzone from "react-dropzone";
 import FlexBetween from "./UI/FlexBetween";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import app from "../firebase";
 
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("required").min(2).max(12),
@@ -48,11 +55,6 @@ const initialValues = {
   otp: "",
 };
 
-// const initialValuesLogin = {
-//   email: "",
-//   password: "",
-// };
-
 const Form = () => {
   const [pageType, setPageType] = useState("login");
   const [error, setError] = useState("");
@@ -61,6 +63,7 @@ const Form = () => {
   const [otpVerify, setOtpVerify] = useState(false);
   const [validOtp, setValidOtp] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [image, setImage] = useState(null);
   const otpRef = useRef(null);
   const { palette } = useTheme();
   const dispatch = useDispatch();
@@ -77,30 +80,66 @@ const Form = () => {
     }, 5000);
   }
 
+  const uploadImage = async () => {
+    if (image !== null) {
+      const fileName = new Date().getTime() + image?.name;
+      const storage = getStorage(app);
+      const StorageRef = ref(storage, fileName);
+
+      const uploadTask = uploadBytesResumable(StorageRef, image);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+            default:
+              break;
+          }
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+            setImage(downloadURL);
+          });
+        }
+      );
+    }
+  };
+
   const register = async (values, { resetForm }) => {
     const verified = await verifyOtp();
     if (!verified) {
       setError("Invalid Otp!");
       setOtpClick(false);
       setOtpVerify(false);
-      // resetForm();
       values.otp = "";
       setClicked(false);
       return;
     }
 
-    // this allows us to send form info with image
     values.email = values.email.toLowerCase();
-    const formData = new FormData();
-    for (let value in values) {
-      formData.append(value, values[value]);
-    }
-    formData.append("picturePath", values.picture.name);
+    let formData = {
+      ...values,
+    };
+    formData.profilePhoto = image;
+
     const savedUserResponse = await fetch(
       `${process.env.REACT_APP_BACKEND_URL}/auth/register`,
       {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       }
     );
 
@@ -118,7 +157,6 @@ const Form = () => {
   };
 
   const login = async (values, onSubmitProps) => {
-    // console.log(("login"));
     values.email = values.email.toLowerCase();
     onSubmitProps.resetForm();
     const loggedInResponse = await fetch(
@@ -148,23 +186,19 @@ const Form = () => {
   };
 
   const sendOtp = async (values, onSubmitProps) => {
-    // console.log("otp");
+    if (image) await uploadImage();
     setClicked(true);
     setOtpClick(true);
-    // console.log(otpRef.current.values.email);
-    const response = await fetch(
-      `${process.env.REACT_APP_BACKEND_URL}/auth/register/otp`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: otpRef.current.values.email,
-          name: `${otpRef.current.values.firstName} ${otpRef.current.values.lastName}`,
-        }),
-      }
-    );
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/register/otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: otpRef.current.values.email,
+        name: `${otpRef.current.values.firstName} ${otpRef.current.values.lastName}`,
+      }),
+    });
     const otp = await response.json();
     if (otp.error) {
       setClicked(false);
@@ -178,7 +212,6 @@ const Form = () => {
   };
 
   const verifyOtp = async (values, onSubmitProps) => {
-    // console.log(String(otpRef.current.values.otp), String(validOtp));
     if (String(otpRef.current.values.otp) === String(validOtp)) return true;
     return false;
   };
@@ -186,7 +219,6 @@ const Form = () => {
   return (
     <Formik
       onSubmit={handleFormSubmit}
-      // initialValues={isLogin ? initialValuesLogin : initialValuesRegister}
       initialValues={initialValues}
       validationSchema={isLogin ? loginSchema : registerSchema}
       innerRef={otpRef}
@@ -271,6 +303,7 @@ const Form = () => {
                     multiple={false}
                     onDrop={(acceptedFiles) => {
                       setFieldValue("picture", acceptedFiles[0]);
+                      setImage(acceptedFiles[0]);
                     }}
                   >
                     {({ getRootProps, getInputProps }) => (
@@ -321,12 +354,12 @@ const Form = () => {
                   <InputAdornment position="end">
                     <IconButton
                       aria-label="toggle password visibility"
-                      onClick={() => setShowPassword(prev => !prev)}
+                      onClick={() => setShowPassword((prev) => !prev)}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
-                )
+                ),
               }}
             />
             {!error && !isLogin && otpClick && (
@@ -394,12 +427,12 @@ const Form = () => {
 
           {pageType === "login" && (
             <Typography
-              onClick={() => navigate('/forgot/password')}
+              onClick={() => navigate("/forgot/password")}
               sx={{
                 textDecoration: "underline",
                 color: palette.primary.main,
-                mt:"1rem",
-                pl:"0.2rem",
+                mt: "1rem",
+                pl: "0.2rem",
                 "&:hover": {
                   cursor: "pointer",
                   color: palette.primary.light,
@@ -452,7 +485,6 @@ const Form = () => {
                   ? "VERIFY EMAIL / SEND OTP"
                   : "VERIFY OTP AND REGISTER"
                 : "WAIT..."}
-              {/* {console.log(errors, otpClick, values.otp)} */}
             </Button>
             <Typography
               onClick={() => {

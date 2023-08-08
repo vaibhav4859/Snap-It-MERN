@@ -8,7 +8,6 @@ const SuggestedWidget = ({ userId, reRender, setReRender }) => {
   const { palette } = useTheme();
   const token = useSelector((state) => state.token);
   const [friends, setFriends] = useState([]);
-  // console.log(reRender);
 
   useEffect(() => {
     const getFriends = async () => {
@@ -36,17 +35,18 @@ const SuggestedWidget = ({ userId, reRender, setReRender }) => {
         Suggested For You
       </Typography>
       <Box display="flex" flexDirection="column" gap="1.5rem">
-        {friends && friends.map((friend, index) => (
-          <Friend
-            key={index}
-            friendId={friend._id}
-            name={`${friend.firstName} ${friend.lastName}`}
-            subtitle={friend.occupation}
-            userPicturePath={friend.picturePath}
-            setReRender={setReRender}
-            reRender={reRender}
-          />
-        ))}
+        {friends &&
+          friends.map((friend, index) => (
+            <Friend
+              key={index}
+              friendId={friend._id}
+              name={`${friend.firstName} ${friend.lastName}`}
+              subtitle={friend.occupation}
+              userProfilePhoto={friend.profilePhoto}
+              setReRender={setReRender}
+              reRender={reRender}
+            />
+          ))}
       </Box>
     </WidgetWrapper>
   );

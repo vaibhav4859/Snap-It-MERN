@@ -24,16 +24,24 @@ import FlexBetween from "../UI/FlexBetween";
 import Dropzone from "react-dropzone";
 import UserImage from "../UI/UserImage";
 import WidgetWrapper from "../UI/WidgetWrapper";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "../../store/index";
 import { useNavigate } from "react-router-dom";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import app from "../../firebase";
 
-const MyPostWidget = ({ picturePath }) => {
+const MyPostWidget = ({ profilePhoto }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isImage, setIsImage] = useState(false);
   const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
   const [post, setPost] = useState("");
   const [open, setOpen] = useState(false);
   const inputRef = useRef();
@@ -51,21 +59,64 @@ const MyPostWidget = ({ picturePath }) => {
     inputRef.current.focus();
   };
 
-  const handlePost = async () => {
-    const formData = new FormData();
-    formData.append("userId", _id);
-    formData.append("description", post);
-    if (image) {
-      formData.append("picture", image);
-      formData.append("picturePath", image.name);
+  const uploadImage = async () => {
+    if (image !== null) {
+      const fileName = new Date().getTime() + image?.name;
+      const storage = getStorage(app);
+      const StorageRef = ref(storage, fileName);
+
+      const uploadTask = uploadBytesResumable(StorageRef, image);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+            default:
+              break;
+          }
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+            setImageUrl(downloadURL);
+          });
+        }
+      );
     }
-    
+  };
+
+  useEffect(() => {
+    uploadImage(); // eslint-disable-next-line
+  }, [image]);
+
+  const handlePost = async () => {
+    while (image === null) {}
+    let formData = {};
+    formData.userId = _id;
+    formData.description = post;
+    if (image) {
+      formData.postImage = imageUrl;
+    }
+
     setImage(null);
     setPost("");
     const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/posts`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
     });
     const posts = await response.json();
     dispatch(setPosts({ posts }));
@@ -75,7 +126,7 @@ const MyPostWidget = ({ picturePath }) => {
   return (
     <WidgetWrapper>
       <FlexBetween gap="1.5rem">
-        <UserImage image={picturePath} />
+        <UserImage image={profilePhoto} />
         <InputBase
           placeholder="What's on your mind..."
           onChange={(e) => setPost(e.target.value.trimLeft())}

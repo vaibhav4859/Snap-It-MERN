@@ -120,7 +120,6 @@ const UpdatePassword = (props) => {
     }
     setClicked(true);
     if (user) id = user[0]._id;
-    console.log(id);
     const otpResponse = await fetch(
       `${process.env.REACT_APP_BACKEND_URL}/users/${id}/update/password/sendotp`,
       {
@@ -217,7 +216,7 @@ const UpdatePassword = (props) => {
                 <TextField
                   label="Email"
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={!props.user.email ? handleChange : null}
                   value={values.email}
                   name="email"
                   error={Boolean(touched.email) && Boolean(errors.email)}
@@ -254,7 +253,7 @@ const UpdatePassword = (props) => {
                 {!otpError && otpVerify && otpClick && (
                   <TextField
                     label="Enter new Password"
-                    type={showPassword ? "text" : "password"} 
+                    type={showPassword ? "text" : "password"}
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={values.newPassword}
@@ -270,19 +269,19 @@ const UpdatePassword = (props) => {
                         <InputAdornment position="end">
                           <IconButton
                             aria-label="toggle password visibility"
-                            onClick={() => setShowPassword(prev => !prev)}
+                            onClick={() => setShowPassword((prev) => !prev)}
                           >
                             {showPassword ? <VisibilityOff /> : <Visibility />}
                           </IconButton>
                         </InputAdornment>
-                      )
+                      ),
                     }}
                   />
                 )}
                 {!otpError && otpVerify && otpClick && (
                   <TextField
                     label="Confirm new password"
-                    type={showConfirmPassword ? "text" : "password"} 
+                    type={showConfirmPassword ? "text" : "password"}
                     onBlur={handleBlur}
                     onChange={handleChange}
                     value={values.confirmPassword}
@@ -300,12 +299,18 @@ const UpdatePassword = (props) => {
                         <InputAdornment position="end">
                           <IconButton
                             aria-label="toggle password visibility"
-                            onClick={() => setShowConfirmPassword(prev => !prev)}
+                            onClick={() =>
+                              setShowConfirmPassword((prev) => !prev)
+                            }
                           >
-                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                            {showConfirmPassword ? (
+                              <VisibilityOff />
+                            ) : (
+                              <Visibility />
+                            )}
                           </IconButton>
                         </InputAdornment>
-                      )
+                      ),
                     }}
                   />
                 )}

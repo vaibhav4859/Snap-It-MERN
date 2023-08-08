@@ -26,11 +26,14 @@ const LoginPage = () => {
         <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }}>
           Welcome to Snap-It, the Social Media for Sociopaths!
         </Typography>
-        <UpdatePassword forgot={true} user={{
-            email:"",
-            firstName:"",
-            lastName:""
-        }} />
+        <UpdatePassword
+          forgot={true}
+          user={{
+            email: "",
+            firstName: "",
+            lastName: "",
+          }}
+        />
       </Box>
     </Box>
   );
